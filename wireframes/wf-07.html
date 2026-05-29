@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-07 · Admin — Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── FRAME ──────────────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.frame-header {
+  background: #F5F5F5;
+  border-bottom: 1.5px solid #212121;
+  padding: 7px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.fh-title  { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+.fh-badge  { font-size: 10px; font-weight: 600; border: 1.5px solid #212121; padding: 1px 7px; background: #FFFFFF; white-space: nowrap; }
+.fh-annotation { font-size: 10.5px; color: #BDBDBD; font-style: italic; border-bottom: 1px dotted #BDBDBD; padding-bottom: 1px; }
+
+/* ── BODY ───────────────────────────────────────────────── */
+.frame-body { display: flex; min-height: 720px; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar {
+  width: 188px; flex-shrink: 0;
+  border-right: 1.5px solid #E0E0E0;
+  padding: 14px 14px;
+  display: flex; flex-direction: column;
+}
+.sb-logo  { border: 1.5px dashed #BDBDBD; text-align: center; padding: 6px 0; font-size: 12px; color: #BDBDBD; letter-spacing: 0.5px; margin-bottom: 10px; }
+.sb-role  { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #BDBDBD; margin-bottom: 2px; }
+.sb-user  { font-size: 12px; font-weight: 700; color: #212121; margin-bottom: 12px; }
+.sb-sec   { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #BDBDBD; border-bottom: 1px dotted #E0E0E0; padding-bottom: 3px; margin: 8px 0 5px; }
+.sb-item  { font-size: 12px; color: #212121; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+.sb-item.active { font-weight: 700; }
+.ic       { font-size: 10px; font-weight: 700; color: #BDBDBD; width: 14px; font-family: monospace; flex-shrink: 0; }
+.sb-item.active .ic { color: #212121; }
+.sb-spacer { flex: 1; }
+.sb-logout { font-size: 11.5px; color: #BDBDBD; border-top: 1px solid #E0E0E0; padding-top: 10px; margin-top: 10px; display: flex; gap: 6px; align-items: center; }
+
+/* ── CONTENT ─────────────────────────────────────────────── */
+.content { flex: 1; padding: 18px 20px; min-width: 0; }
+
+.page-title { font-size: 16px; font-weight: 700; color: #212121; margin-bottom: 2px; }
+.page-sub   { font-size: 11px; color: #BDBDBD; margin-bottom: 16px; }
+
+/* ── 5 KPI CARDS ─────────────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.kpi-card {
+  border: 1.5px solid #E0E0E0;
+  padding: 11px 12px;
+  background: #FFFFFF;
+}
+.kpi-card.alert { border-color: #212121; }
+.kpi-lbl  { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #BDBDBD; margin-bottom: 5px; }
+.kpi-val  { font-size: 20px; font-weight: 700; color: #212121; line-height: 1; margin-bottom: 3px; }
+.kpi-val.small { font-size: 15px; }
+.kpi-meta { font-size: 10px; color: #BDBDBD; }
+.kpi-badge {
+  display: inline-block; font-size: 9px; font-weight: 700;
+  padding: 1px 5px; background: #212121; color: #FFFFFF; margin-top: 4px;
+}
+.kpi-badge.outline {
+  background: #FFFFFF; color: #212121; border: 1.5px solid #212121;
+}
+
+/* ── CHART PLACEHOLDER ───────────────────────────────────── */
+.chart-section { margin-bottom: 18px; }
+.chart-header  {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.chart-title   { font-size: 11px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; color: #212121; }
+.chart-controls { display: flex; gap: 6px; }
+.chart-btn {
+  font-size: 10px; padding: 3px 9px;
+  border: 1.5px solid #E0E0E0; background: #FFFFFF; color: #BDBDBD;
+  cursor: default; font-family: inherit;
+}
+.chart-btn.active { border-color: #212121; color: #212121; font-weight: 700; }
+
+/* Bar chart container */
+.chart-box {
+  border: 1.5px solid #E0E0E0;
+  background: #FFFFFF;
+  padding: 14px 16px 10px;
+  position: relative;
+}
+
+/* Y-axis labels */
+.chart-inner {
+  display: flex;
+  gap: 0;
+  height: 130px;
+  position: relative;
+}
+.chart-y-labels {
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  width: 32px; flex-shrink: 0;
+  align-items: flex-end;
+  padding-right: 6px;
+}
+.chart-y-labels span { font-size: 9px; color: #BDBDBD; }
+
+.chart-bars-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+/* Horizontal grid lines */
+.chart-gridlines {
+  position: absolute; inset: 0 0 20px 0;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+.grid-line { height: 1px; background: #F0F0F0; width: 100%; }
+
+/* Bars row */
+.bars-row {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  padding-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+.bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  gap: 0;
+}
+.bar {
+  width: 100%;
+  background: #212121;
+  min-height: 2px;
+  position: relative;
+}
+.bar.lighter { background: #BDBDBD; }
+.bar.lightest { background: #E0E0E0; }
+
+/* X labels */
+.x-labels-row {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 18px;
+  display: flex;
+  gap: 3px;
+  padding: 0;
+}
+.x-label {
+  flex: 1; text-align: center;
+  font-size: 8.5px; color: #BDBDBD;
+  overflow: hidden; white-space: nowrap;
+}
+
+/* Chart legend */
+.chart-legend {
+  display: flex; gap: 12px; margin-top: 8px;
+  justify-content: flex-end;
+}
+.chart-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #BDBDBD; }
+.chart-legend-dot  { width: 10px; height: 10px; }
+
+/* ── BOTTOM TWO TABLES ───────────────────────────────────── */
+.bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.table-section { }
+.table-header  {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 7px;
+}
+.table-title   { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #212121; }
+.table-badge   { font-size: 10px; font-weight: 700; background: #212121; color: #FFFFFF; padding: 1px 6px; }
+.table-link    { font-size: 10px; color: #BDBDBD; text-decoration: underline; cursor: pointer; }
+
+table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+thead th {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #BDBDBD;
+  border-bottom: 1.5px solid #212121;
+  padding: 5px 8px; text-align: left;
+  background: #FAFAFA;
+}
+tbody td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #E0E0E0;
+  color: #212121;
+  vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: #F5F5F5; }
+
+.btn-incele {
+  font-size: 10px; font-weight: 700;
+  border: 1.5px solid #212121;
+  background: #FFFFFF; color: #212121;
+  padding: 3px 9px; cursor: default;
+  font-family: inherit; white-space: nowrap;
+}
+.status-pill {
+  font-size: 9.5px; font-weight: 700;
+  padding: 2px 7px; display: inline-block;
+}
+.pill-new     { background: #212121; color: #FFFFFF; }
+.pill-review  { background: #F5F5F5; color: #212121; border: 1.5px solid #212121; }
+.pill-draft   { background: #F5F5F5; color: #BDBDBD; border: 1.5px solid #E0E0E0; }
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header -->
+  <div class="frame-header">
+    <span class="fh-title">WF-07 · Admin — Dashboard</span>
+    <span class="fh-badge">Admin</span>
+    <span class="fh-annotation">KPI kartına tıkla → ilgili yönetim sayfasına git · Grafik çubuğuna tıkla → o günün detayı açılır</span>
+  </div>
+
+  <div class="frame-body">
+
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="sb-logo">[ Logo ]</div>
+      <div class="sb-role">Admin</div>
+      <div class="sb-user">Sistem Yöneticisi</div>
+
+      <div class="sb-sec">Genel</div>
+      <div class="sb-item active"><span class="ic">[+]</span> Dashboard</div>
+      <div class="sb-item"><span class="ic">[]</span> Randevular</div>
+      <div class="sb-item"><span class="ic">[]</span> Kullanıcılar</div>
+
+      <div class="sb-sec">Danışmanlar</div>
+      <div class="sb-item"><span class="ic">[]</span> Başvurular <span style="font-size:9px;background:#212121;color:#FFF;padding:1px 5px;margin-left:2px;">7</span></div>
+      <div class="sb-item"><span class="ic">[]</span> Danışman Listesi</div>
+      <div class="sb-item"><span class="ic">[]</span> Belgeler</div>
+
+      <div class="sb-sec">Finans</div>
+      <div class="sb-item"><span class="ic">[]</span> Ödemeler</div>
+      <div class="sb-item"><span class="ic">[]</span> İadeler</div>
+      <div class="sb-item"><span class="ic">[]</span> Affiliate</div>
+
+      <div class="sb-sec">İçerik</div>
+      <div class="sb-item"><span class="ic">[]</span> Blog Yazıları <span style="font-size:9px;background:#212121;color:#FFF;padding:1px 5px;margin-left:2px;">4</span></div>
+      <div class="sb-item"><span class="ic">[]</span> Testler</div>
+      <div class="sb-item"><span class="ic">[]</span> Kategoriler</div>
+
+      <div class="sb-sec">Sistem</div>
+      <div class="sb-item"><span class="ic">[]</span> Ayarlar</div>
+      <div class="sb-item"><span class="ic">[]</span> Loglar</div>
+
+      <div class="sb-spacer"></div>
+      <div class="sb-logout"><span class="ic">[]</span> Çıkış Yap →</div>
+    </div>
+
+    <!-- ── Content ── -->
+    <div class="content">
+
+      <div class="page-title">Admin Dashboard</div>
+      <div class="page-sub">Son güncelleme: 14 Nisan 2025, 09:42 · Otomatik yenileme: 60 sn</div>
+
+      <!-- 5 KPI Cards -->
+      <div class="kpi-row">
+
+        <div class="kpi-card">
+          <div class="kpi-lbl">Bugünkü Randevular</div>
+          <div class="kpi-val">34</div>
+          <div class="kpi-meta">↑ 6 dünden fazla</div>
+          <span class="kpi-badge outline">+21%</span>
+        </div>
+
+        <div class="kpi-card alert">
+          <div class="kpi-lbl">Bekleyen Onaylar</div>
+          <div class="kpi-val">7</div>
+          <div class="kpi-meta">Danışman başvurusu</div>
+          <span class="kpi-badge">⚠ Aksiyon gerekli</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-lbl">Bu Haftanın Geliri</div>
+          <div class="kpi-val small">₺42.800</div>
+          <div class="kpi-meta">Hedef: ₺50.000</div>
+          <div style="margin-top:5px;height:4px;background:#E0E0E0;"><div style="width:86%;height:100%;background:#212121;"></div></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-lbl">Komisyon (%20)</div>
+          <div class="kpi-val small">₺8.560</div>
+          <div class="kpi-meta">Bu hafta kesildi</div>
+          <span class="kpi-badge outline">%20 oran</span>
+        </div>
+
+        <div class="kpi-card alert">
+          <div class="kpi-lbl">Bekleyen Transfer</div>
+          <div class="kpi-val small">₺31.200</div>
+          <div class="kpi-meta">12 danışmana</div>
+          <span class="kpi-badge">Cuma ödeme günü</span>
+        </div>
+
+      </div><!-- /kpi-row -->
+
+      <!-- Chart -->
+      <div class="chart-section">
+        <div class="chart-header">
+          <div class="chart-title">Son 30 Gün — Seans Trendi</div>
+          <div class="chart-controls">
+            <div class="chart-btn">7 Gün</div>
+            <div class="chart-btn active">30 Gün</div>
+            <div class="chart-btn">90 Gün</div>
+            <div class="chart-btn">PDF ↓</div>
+          </div>
+        </div>
+
+        <div class="chart-box">
+          <div class="chart-inner">
+            <!-- Y labels -->
+            <div class="chart-y-labels">
+              <span>50</span>
+              <span>40</span>
+              <span>30</span>
+              <span>20</span>
+              <span>10</span>
+              <span>0</span>
+            </div>
+
+            <!-- Bars -->
+            <div class="chart-bars-area">
+              <div class="chart-gridlines">
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+                <div class="grid-line"></div>
+              </div>
+
+              <div class="bars-row">
+                <!-- 30 bars representing days, varying heights -->
+                <div class="bar-col"><div class="bar" style="height:46%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:52%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:38%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:20%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:56%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:60%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:48%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:22%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:18%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:64%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:70%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:58%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:66%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:26%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:24%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:72%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:68%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:74%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:80%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:30%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:28%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:76%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:82%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:78%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:86%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:84%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:32%;"></div></div>
+                <div class="bar-col"><div class="bar lighter" style="height:30%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:88%;"></div></div>
+                <div class="bar-col"><div class="bar" style="height:90%;"></div></div>
+
+                <!-- X labels overlay -->
+                <div class="x-labels-row">
+                  <span class="x-label">16 Mar</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">20 Mar</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">24 Mar</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">28 Mar</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">1 Nis</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">5 Nis</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">9 Nis</span>
+                  <span class="x-label"></span><span class="x-label"></span><span class="x-label"></span>
+                  <span class="x-label">13 Nis</span>
+                  <span class="x-label"></span>
+                  <span class="x-label">14 Nis</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-legend">
+            <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#212121;"></div>Hafta içi</div>
+            <div class="chart-legend-item"><div class="chart-legend-dot" style="background:#BDBDBD;"></div>Hafta sonu</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom two tables -->
+      <div class="bottom-row">
+
+        <!-- Danışman Başvuruları -->
+        <div class="table-section">
+          <div class="table-header">
+            <div class="table-title">Bekleyen Danışman Başvuruları</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="table-badge">7</span>
+              <span class="table-link">Tümünü Gör →</span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Ad Soyad</th>
+                <th>Uzmanlık</th>
+                <th>Başvuru Tarihi</th>
+                <th>Durum</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dr. Elif Çelik</strong></td>
+                <td>Klinik Psikolog</td>
+                <td>13 Nis 2025</td>
+                <td><span class="status-pill pill-new">Yeni</span></td>
+                <td><button class="btn-incele">İncele</button></td>
+              </tr>
+              <tr>
+                <td><strong>Uzm. Barış Doğan</strong></td>
+                <td>PDR Uzmanı</td>
+                <td>12 Nis 2025</td>
+                <td><span class="status-pill pill-review">İncelemede</span></td>
+                <td><button class="btn-incele">İncele</button></td>
+              </tr>
+              <tr>
+                <td><strong>Dr. Canan Yıldız</strong></td>
+                <td>Psikiyatrist</td>
+                <td>10 Nis 2025</td>
+                <td><span class="status-pill pill-new">Yeni</span></td>
+                <td><button class="btn-incele">İncele</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Blog Yazıları -->
+        <div class="table-section">
+          <div class="table-header">
+            <div class="table-title">Bekleyen Blog Yazıları</div>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="table-badge">4</span>
+              <span class="table-link">Tümünü Gör →</span>
+            </div>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Başlık</th>
+                <th>Danışman</th>
+                <th>Gönderim</th>
+                <th>Durum</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Anksiyete ile Baş Etme</strong></td>
+                <td>Dr. A. Kaya</td>
+                <td>13 Nis</td>
+                <td><span class="status-pill pill-review">İncelemede</span></td>
+                <td><button class="btn-incele">İncele</button></td>
+              </tr>
+              <tr>
+                <td><strong>Uyku Hijyeni Rehberi</strong></td>
+                <td>Uzm. M. Can</td>
+                <td>12 Nis</td>
+                <td><span class="status-pill pill-new">Yeni</span></td>
+                <td><button class="btn-incele">İncele</button></td>
+              </tr>
+              <tr>
+                <td><strong>Sağlıklı Sınır Koymak</strong></td>
+                <td>Dr. S. Korkmaz</td>
+                <td>11 Nis</td>
+                <td><span class="status-pill pill-draft">Taslak</span></td>
+                <td><button class="btn-incele">İncele</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- /bottom-row -->
+    </div><!-- /content -->
+  </div><!-- /frame-body -->
+</div><!-- /wf-frame -->
+
+</body>
+</html>

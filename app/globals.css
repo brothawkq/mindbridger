@@ -1,0 +1,559 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ============================================================
+   TEMA MAPPING — shadcn/ui token'larını @theme'e bağlar
+   ============================================================ */
+@theme inline {
+  /* Renkler */
+  --color-background:           var(--background);
+  --color-foreground:           var(--foreground);
+  --color-card:                 var(--card);
+  --color-card-foreground:      var(--card-foreground);
+  --color-popover:              var(--popover);
+  --color-popover-foreground:   var(--popover-foreground);
+  --color-primary:              var(--primary);
+  --color-primary-foreground:   var(--primary-foreground);
+  --color-secondary:            var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted:                var(--muted);
+  --color-muted-foreground:     var(--muted-foreground);
+  --color-accent:               var(--accent);
+  --color-accent-foreground:    var(--accent-foreground);
+  --color-destructive:          var(--destructive);
+  --color-border:               var(--border);
+  --color-input:                var(--input);
+  --color-ring:                 var(--ring);
+
+  /* Grafik */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  /* Sidebar */
+  --color-sidebar:                    var(--sidebar);
+  --color-sidebar-foreground:         var(--sidebar-foreground);
+  --color-sidebar-primary:            var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent:             var(--sidebar-accent);
+  --color-sidebar-accent-foreground:  var(--sidebar-accent-foreground);
+  --color-sidebar-border:             var(--sidebar-border);
+  --color-sidebar-ring:               var(--sidebar-ring);
+
+  /* Tipografi */
+  --font-sans:     var(--font-inter), "Inter", system-ui, sans-serif;
+  --font-heading:  var(--font-overpass), "Overpass", system-ui, sans-serif;
+  --font-mono:     ui-monospace, monospace;
+  --font-overpass: "Overpass", system-ui, sans-serif;
+  --font-inter:    "Inter", system-ui, sans-serif;
+
+  /* Border radius — BetterHelp yuvarlatılmış */
+  --radius-sm:  4px;
+  --radius-md:  8px;
+  --radius-lg:  12px;
+  --radius-xl:  16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  /* BetterHelp renk paleti — Tailwind class olarak erişilebilir */
+  --color-pub-bg:      #FFFCF6;
+  --color-pub-bg-alt:  #F5F7F5;
+  --color-pub-bg-warm: #F7F0E6;
+  --color-pub-dark:    #325343;
+  --color-pub-medium:  #397A4A;
+  --color-pub-teal:    #457777;
+  --color-pub-amber:   #A75D00;
+  --color-pub-btn:     #A6DE9B;
+  --color-pub-heading: #252625;
+  --color-pub-body:    #4A4D4A;
+  --color-pub-on-dark: #F5F7F5;
+  --color-pub-border:  #D4E4D8;
+}
+
+/* ============================================================
+   LIGHT MODE — BetterHelp Renk Sistemi
+   Chrome DevTools, betterhelp.com, 2026-05-27
+   ============================================================ */
+:root {
+  /* ── MindBridger / BetterHelp özel değişkenler ── */
+  --mb-bg:             #FFFCF6;   /* sıcak krem — sayfa arkaplanı */
+  --mb-surface:        #FFFFFF;   /* kart, panel, modal */
+  --mb-border:         #D4E4D8;   /* standart kenarlık */
+  --mb-border-strong:  #325343;   /* koyu yeşil — vurgulu kenarlık */
+  --mb-muted:          #4A4D4A;   /* gövde metin, ikincil */
+  --mb-text:           #252625;   /* ana metin, başlık */
+  --mb-primary:        #A6DE9B;   /* CTA buton bg (açık yeşil) */
+  --mb-primary-text:   #325343;   /* CTA buton yazı (koyu yeşil) */
+
+  /* ── Gölge ── */
+  --mb-shadow:        0 2px 8px rgba(50, 83, 67, 0.08);
+  --mb-shadow-hover:  0 6px 20px rgba(50, 83, 67, 0.14);
+  --mb-shadow-strong: 0 8px 28px rgba(50, 83, 67, 0.18);
+
+  /* ── shadcn/ui token'ları ── */
+  --background:           #FFFCF6;
+  --foreground:           #252625;
+  --card:                 #FFFFFF;
+  --card-foreground:      #252625;
+  --popover:              #FFFFFF;
+  --popover-foreground:   #252625;
+  --primary:              #A6DE9B;
+  --primary-foreground:   #325343;
+  --secondary:            #F5F7F5;
+  --secondary-foreground: #252625;
+  --muted:                #F5F7F5;
+  --muted-foreground:     #4A4D4A;
+  --accent:               #325343;
+  --accent-foreground:    #F5F7F5;
+  --destructive:          oklch(0.577 0.245 27.325);
+  --border:               #D4E4D8;
+  --input:                #325343;
+  --ring:                 #A6DE9B;
+  --radius:               8px;
+
+  /* ── Grafik (recharts) ── */
+  --chart-1: #325343;
+  --chart-2: #397A4A;
+  --chart-3: #A6DE9B;
+  --chart-4: #457777;
+  --chart-5: #A75D00;
+
+  /* ── Sidebar — koyu yeşil ── */
+  --sidebar:                    #325343;
+  --sidebar-foreground:         #F5F7F5;
+  --sidebar-primary:            #A6DE9B;
+  --sidebar-primary-foreground: #325343;
+  --sidebar-accent:             rgba(166, 222, 155, 0.12);
+  --sidebar-accent-foreground:  #F5F7F5;
+  --sidebar-border:             rgba(245, 247, 245, 0.1);
+  --sidebar-ring:               #A6DE9B;
+
+  /* ── Public / alias değişkenler (geriye dönük uyum) ── */
+  --pub-bg:           #FFFCF6;
+  --pub-bg-alt:       #F5F7F5;
+  --pub-bg-warm:      #F7F0E6;
+  --pub-green-dark:   #325343;
+  --pub-green:        #397A4A;
+  --pub-green-teal:   #457777;
+  --pub-green-amber:  #A75D00;
+  --pub-btn:          #A6DE9B;
+  --pub-btn-hover:    #8ED485;
+  --pub-green-btn:    #A6DE9B;
+  --pub-green-btn-hover: #8ED485;
+  --pub-green-light:  #EDF7ED;
+  --pub-text:         #252625;
+  --pub-text-body:    #4A4D4A;
+  --pub-text-on-dark: #F5F7F5;
+  --pub-text-muted:   #4A4D4A;
+  --pub-border:       #D4E4D8;
+  --pub-radius-btn:   100px;
+  --pub-radius-card:  12px;
+  --pub-muted:        #4A4D4A;
+  --pub-surface:      #FFFFFF;
+  --pub-primary:      #A6DE9B;
+  --pub-primary-text: #325343;
+}
+
+/* ============================================================
+   DARK MODE — BetterHelp Koyu Tema
+   ============================================================ */
+.dark {
+  --mb-bg:             #1A2E22;
+  --mb-surface:        #1F3829;
+  --mb-border:         rgba(166, 222, 155, 0.15);
+  --mb-border-strong:  #A6DE9B;
+  --mb-muted:          rgba(245, 247, 245, 0.55);
+  --mb-text:           #F5F7F5;
+  --mb-primary:        #A6DE9B;
+  --mb-primary-text:   #1A2E22;
+
+  --mb-shadow:        0 2px 8px rgba(0, 0, 0, 0.3);
+  --mb-shadow-hover:  0 6px 20px rgba(0, 0, 0, 0.4);
+  --mb-shadow-strong: 0 8px 28px rgba(0, 0, 0, 0.5);
+
+  --background:           #1A2E22;
+  --foreground:           #F5F7F5;
+  --card:                 #1F3829;
+  --card-foreground:      #F5F7F5;
+  --popover:              #1F3829;
+  --popover-foreground:   #F5F7F5;
+  --primary:              #A6DE9B;
+  --primary-foreground:   #1A2E22;
+  --secondary:            #243d30;
+  --secondary-foreground: #F5F7F5;
+  --muted:                #243d30;
+  --muted-foreground:     rgba(245, 247, 245, 0.55);
+  --accent:               #A6DE9B;
+  --accent-foreground:    #1A2E22;
+  --destructive:          oklch(0.704 0.191 22.216);
+  --border:               rgba(166, 222, 155, 0.15);
+  --input:                #A6DE9B;
+  --ring:                 #A6DE9B;
+
+  --chart-1: #A6DE9B;
+  --chart-2: #8ED485;
+  --chart-3: #6BC46A;
+  --chart-4: #457777;
+  --chart-5: #F5C518;
+
+  --sidebar:                    #1A2E22;
+  --sidebar-foreground:         #F5F7F5;
+  --sidebar-primary:            #A6DE9B;
+  --sidebar-primary-foreground: #1A2E22;
+  --sidebar-accent:             rgba(166, 222, 155, 0.1);
+  --sidebar-accent-foreground:  #F5F7F5;
+  --sidebar-border:             rgba(166, 222, 155, 0.12);
+  --sidebar-ring:               #A6DE9B;
+
+  /* dark pub aliases */
+  --pub-bg:           #1A2E22;
+  --pub-bg-alt:       #1F3829;
+  --pub-text:         #F5F7F5;
+  --pub-text-muted:   rgba(245, 247, 245, 0.6);
+  --pub-border:       rgba(166, 222, 155, 0.15);
+}
+
+/* ============================================================
+   TEMEL STİLLER
+   ============================================================ */
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    min-height: 100dvh;
+  }
+
+  /* Seçim rengi */
+  ::selection {
+    background-color: #325343;
+    color: #F5F7F5;
+  }
+
+  .dark ::selection {
+    background-color: #A6DE9B;
+    color: #1A2E22;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid var(--mb-border-strong);
+    outline-offset: 2px;
+  }
+}
+
+/* ============================================================
+   TİPOGRAFİ YARDIMCI SINIFLAR
+   ============================================================ */
+@layer utilities {
+  /* Sayfa başlığı */
+  .text-page-title {
+    font-family: var(--font-overpass), "Overpass", system-ui, sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mb-text);
+  }
+
+  /* Bölüm başlığı: küçük uppercase etiket */
+  .text-section-title {
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--mb-muted);
+  }
+
+  /* Etiket */
+  .text-label {
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--mb-muted);
+  }
+
+  /* Meta / yardımcı metin */
+  .text-meta {
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 12px;
+    color: var(--mb-muted);
+  }
+
+  /* ── Buton stilleri ── */
+
+  /* Primary — açık yeşil pill */
+  .btn-primary {
+    background-color: var(--mb-primary);
+    color: var(--mb-primary-text);
+    border: none;
+    padding: 10px 22px;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.15s ease;
+  }
+  .btn-primary:hover { background-color: #8ED485; }
+  .btn-primary:disabled {
+    background-color: #D4E4D8;
+    color: #4A4D4A;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  /* Secondary / Outline — koyu yeşil kenarlıklı pill */
+  .btn-secondary {
+    background-color: transparent;
+    border: 1.5px solid var(--mb-border-strong);
+    color: var(--mb-border-strong);
+    padding: 10px 22px;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background-color 0.15s ease;
+  }
+  .btn-secondary:hover { background-color: rgba(50, 83, 67, 0.06); }
+
+  /* Ghost / Link buton */
+  .btn-ghost {
+    background-color: transparent;
+    border: none;
+    color: var(--mb-border-strong);
+    text-decoration: underline;
+    padding: 0;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* ── Kart ── */
+  .card-mb {
+    background-color: var(--mb-surface);
+    border: 1px solid var(--mb-border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--mb-shadow);
+  }
+  .card-mb-active {
+    background-color: var(--mb-surface);
+    border: 1.5px solid var(--mb-border-strong);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: var(--mb-shadow);
+  }
+
+  /* ── Input ── */
+  .input-mb {
+    border: 1px solid var(--mb-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 14px;
+    background-color: var(--mb-surface);
+    color: var(--mb-text);
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .input-mb::placeholder { color: var(--mb-muted); }
+  .input-mb:focus {
+    border-color: var(--mb-border-strong);
+    outline: 2px solid rgba(50, 83, 67, 0.15);
+    outline-offset: 0;
+  }
+  .input-mb-error,
+  input[aria-invalid="true"],
+  textarea[aria-invalid="true"],
+  select[aria-invalid="true"] {
+    border-color: oklch(0.577 0.245 27.325);
+  }
+
+  /* ── Tablo ── */
+  .table-mb thead th {
+    background-color: #F5F7F5;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--mb-muted);
+    border-bottom: 1px solid var(--mb-border);
+  }
+  .table-mb tbody tr:hover { background-color: #F5F7F5; }
+  .table-mb td,
+  .table-mb th {
+    border-bottom: 1px solid var(--mb-border);
+    padding: 10px 14px;
+  }
+
+  /* ── Pill / Badge ── */
+  .pill-filled {
+    background-color: var(--mb-primary);
+    color: var(--mb-primary-text);
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 100px;
+    display: inline-block;
+  }
+  .pill-outline {
+    background-color: transparent;
+    border: 1.5px solid var(--mb-border-strong);
+    color: var(--mb-border-strong);
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 100px;
+    display: inline-block;
+  }
+  .pill-muted {
+    background-color: #F5F7F5;
+    color: var(--mb-muted);
+    padding: 2px 10px;
+    font-size: 11px;
+    border-radius: 100px;
+    display: inline-block;
+  }
+
+  /* ── Progress Bar ── */
+  .progress-mb {
+    background-color: var(--mb-border);
+    border-radius: 100px;
+    height: 8px;
+    width: 100%;
+    overflow: hidden;
+  }
+  .progress-mb-fill {
+    background-color: var(--mb-primary);
+    height: 100%;
+    border-radius: 100px;
+    transition: width 0.6s ease-in-out;
+  }
+
+  /* ── Sidebar ── */
+  .sidebar-mb {
+    width: 220px;
+    min-width: 220px;
+    background-color: var(--sidebar);
+    border-right: 1px solid var(--sidebar-border);
+  }
+  .sidebar-section-title {
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    color: rgba(245, 247, 245, 0.4);
+    letter-spacing: 1px;
+    padding: 6px 16px;
+    margin-top: 8px;
+  }
+  .sidebar-nav-item {
+    padding: 9px 16px;
+    font-family: var(--font-inter), "Inter", system-ui, sans-serif;
+    font-size: 13px;
+    color: rgba(245, 247, 245, 0.75);
+    border-radius: 0;
+    transition: background-color 0.1s ease, color 0.1s ease;
+  }
+  .sidebar-nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #F5F7F5;
+  }
+  .sidebar-nav-item-active {
+    background-color: rgba(166, 222, 155, 0.12);
+    color: #A6DE9B;
+    border-left: 3px solid #A6DE9B;
+    font-weight: 600;
+  }
+
+  /* ── Frame Header (panel sayfaları) ── */
+  .frame-header {
+    background-color: var(--mb-surface);
+    border-bottom: 1px solid var(--mb-border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .frame-header-title {
+    font-family: var(--font-overpass), "Overpass", system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mb-text);
+  }
+  .frame-header-badge {
+    background-color: rgba(50, 83, 67, 0.08);
+    color: #325343;
+    border-radius: 100px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .frame-header-annotation {
+    font-size: 12px;
+    font-style: italic;
+    color: var(--mb-muted);
+  }
+
+  /* ── Kart hover efekti ── */
+  .card-hover {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mb-shadow-hover);
+  }
+}
+
+/* ============================================================
+   ANİMASYON — prefers-reduced-motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .card-hover:hover { transform: none; }
+}
+
+/* Framer Motion sayfa geçişleri */
+#page-transition-wrapper { min-height: 100dvh; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: #F5F7F5; }
+::-webkit-scrollbar-thumb { background: #D4E4D8; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #325343; }

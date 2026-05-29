@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-10 · Müşteri — Günlük ve Ruh Hali</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── FRAME ──────────────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.frame-header {
+  background: #F5F5F5; border-bottom: 1.5px solid #212121;
+  padding: 7px 14px; display: flex; align-items: center; gap: 10px;
+}
+.fh-title { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+.fh-badge { font-size: 10px; font-weight: 600; border: 1.5px solid #212121; padding: 1px 7px; background: #FFFFFF; white-space: nowrap; }
+.fh-annotation { font-size: 10.5px; color: #BDBDBD; font-style: italic; border-bottom: 1px dotted #BDBDBD; padding-bottom: 1px; }
+
+/* ── BODY ───────────────────────────────────────────────── */
+.frame-body { display: flex; min-height: 780px; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar {
+  width: 188px; flex-shrink: 0;
+  border-right: 1.5px solid #E0E0E0;
+  padding: 14px; display: flex; flex-direction: column;
+}
+.sb-logo  { border: 1.5px dashed #BDBDBD; text-align: center; padding: 6px 0; font-size: 12px; color: #BDBDBD; margin-bottom: 10px; }
+.sb-role  { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #BDBDBD; margin-bottom: 2px; }
+.sb-user  { font-size: 12px; font-weight: 700; color: #212121; margin-bottom: 12px; }
+.sb-sec   { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #BDBDBD; border-bottom: 1px dotted #E0E0E0; padding-bottom: 3px; margin: 8px 0 5px; }
+.sb-item  { font-size: 12px; color: #212121; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+.sb-item.active { font-weight: 700; }
+.ic { font-size: 10px; font-weight: 700; color: #BDBDBD; width: 14px; font-family: monospace; flex-shrink: 0; }
+.sb-item.active .ic { color: #212121; }
+.sb-spacer { flex: 1; }
+.sb-logout { font-size: 11.5px; color: #BDBDBD; border-top: 1px solid #E0E0E0; padding-top: 10px; margin-top: 10px; display: flex; gap: 6px; }
+
+/* ── CONTENT ─────────────────────────────────────────────── */
+.content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* ── KRİZ PROTOKOLÜ BANDI (sabit üstte) ─────────────────── */
+.crisis-band {
+  background: #212121;
+  color: #FFFFFF;
+  padding: 9px 20px;
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px;
+}
+.crisis-icon { font-size: 16px; flex-shrink: 0; }
+.crisis-text { font-weight: 700; letter-spacing: 0.2px; }
+.crisis-numbers { display: flex; gap: 10px; margin-left: auto; flex-wrap: wrap; }
+.crisis-num {
+  font-size: 11px; font-weight: 700;
+  border: 1.5px solid #FFFFFF;
+  padding: 2px 10px;
+  display: flex; align-items: center; gap: 5px;
+}
+.crisis-num .num-val { font-size: 14px; letter-spacing: 0.5px; }
+.crisis-close { font-size: 16px; cursor: default; color: #BDBDBD; margin-left: 8px; flex-shrink: 0; }
+
+/* Kriz bant annotation */
+.crisis-annotation {
+  background: #F5F5F5; border: 1.5px dashed #BDBDBD;
+  margin: 0 20px; padding: 6px 12px;
+  font-size: 10.5px; color: #BDBDBD; font-style: italic;
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* ── MAIN INNER ─────────────────────────────────────────── */
+.content-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  flex: 1;
+}
+
+/* Left panel: entry form */
+.entry-panel {
+  border-right: 1.5px solid #E0E0E0;
+  padding: 20px 22px;
+}
+
+/* Right panel: history */
+.history-panel { padding: 20px 22px; }
+
+/* ── ENTRY FORM ──────────────────────────────────────────── */
+.entry-date {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #BDBDBD; margin-bottom: 4px;
+}
+.entry-title {
+  font-size: 17px; font-weight: 700; color: #212121; margin-bottom: 18px;
+}
+
+/* Emoji scale */
+.emoji-section { margin-bottom: 18px; }
+.emoji-section-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #BDBDBD; margin-bottom: 10px;
+}
+.emoji-scale {
+  display: flex; gap: 6px; align-items: flex-end; justify-content: space-between;
+}
+.emoji-item {
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
+  cursor: default; flex: 1;
+}
+.emoji-circle {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 1.5px solid #E0E0E0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; background: #FFFFFF;
+  transition: none;
+}
+.emoji-circle.selected {
+  border-color: #212121;
+  border-width: 2.5px;
+  width: 56px; height: 56px;
+  font-size: 30px;
+  background: #F5F5F5;
+  box-shadow: 0 0 0 3px #E0E0E0;
+}
+.emoji-label {
+  font-size: 9px; color: #BDBDBD; text-align: center;
+  font-weight: 600; letter-spacing: 0.3px;
+}
+.emoji-label.selected { color: #212121; font-weight: 700; }
+
+/* Intensity slider */
+.intensity-row {
+  display: flex; align-items: center; gap: 10px; margin-top: 10px; margin-bottom: 18px;
+}
+.intensity-label { font-size: 10px; color: #BDBDBD; white-space: nowrap; }
+.intensity-track {
+  flex: 1; height: 6px; background: #E0E0E0; border: 1px solid #BDBDBD;
+  position: relative;
+}
+.intensity-fill { height: 100%; width: 70%; background: #212121; }
+.intensity-thumb {
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #212121; border: 2px solid #FFFFFF;
+  box-shadow: 0 0 0 1.5px #212121;
+  position: absolute; top: 50%; left: 70%; transform: translate(-50%, -50%);
+}
+.intensity-value { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+
+/* Textarea */
+.note-section { margin-bottom: 16px; }
+.note-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #BDBDBD; margin-bottom: 6px;
+}
+.note-textarea {
+  width: 100%; height: 110px;
+  border: 1.5px solid #E0E0E0; padding: 10px 12px;
+  font-size: 13px; color: #BDBDBD; font-family: inherit;
+  background: #FFFFFF; resize: none; outline: none;
+  display: block; line-height: 1.6;
+}
+.note-char-count { font-size: 10px; color: #BDBDBD; text-align: right; margin-top: 3px; }
+
+/* Tag suggestions */
+.tag-suggestions { margin-bottom: 14px; }
+.tags-label { font-size: 10px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #BDBDBD; margin-bottom: 6px; }
+.tags-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag-chip {
+  font-size: 11px; padding: 3px 10px;
+  border: 1.5px solid #E0E0E0; color: #BDBDBD;
+  background: #FFFFFF; cursor: default;
+}
+.tag-chip.selected { border-color: #212121; color: #212121; background: #F5F5F5; }
+
+/* Share toggle + save */
+.form-footer { display: flex; flex-direction: column; gap: 10px; }
+.share-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border: 1.5px solid #E0E0E0; background: #FAFAFA;
+}
+.toggle-track {
+  width: 30px; height: 16px; border-radius: 8px;
+  border: 1.5px solid #BDBDBD; background: #FFFFFF;
+  position: relative; flex-shrink: 0;
+}
+.toggle-thumb-off {
+  width: 11px; height: 11px; border-radius: 50%;
+  background: #BDBDBD; position: absolute; top: 1.5px; left: 1.5px;
+}
+.share-label { font-size: 12px; color: #212121; }
+.share-sub   { font-size: 10px; color: #BDBDBD; margin-left: auto; }
+
+.btn-save {
+  width: 100%; background: #212121; color: #FFFFFF; border: none;
+  padding: 11px; font-size: 14px; font-weight: 700;
+  font-family: inherit; cursor: default; letter-spacing: 0.3px;
+}
+
+/* ── HISTORY PANEL ───────────────────────────────────────── */
+.section-heading {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #212121;
+  margin-bottom: 12px; padding-bottom: 5px;
+  border-bottom: 1.5px solid #212121;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.section-heading a { font-size: 10px; font-weight: 400; color: #BDBDBD; text-decoration: underline; cursor: pointer; }
+
+/* Line chart placeholder */
+.chart-placeholder {
+  border: 1.5px solid #E0E0E0;
+  height: 130px; position: relative;
+  margin-bottom: 18px; background: #FFFFFF;
+  overflow: hidden;
+}
+/* Diagonal hatch pattern */
+.chart-placeholder::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 6px,
+    #F0F0F0 6px,
+    #F0F0F0 7px
+  );
+}
+.chart-placeholder-label {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  font-size: 11px; color: #BDBDBD; gap: 4px;
+  z-index: 1;
+}
+.chart-placeholder-label .cp-title { font-weight: 700; font-size: 12px; color: #212121; }
+
+/* Axis labels */
+.chart-x-labels {
+  display: flex; justify-content: space-between;
+  padding: 4px 0; margin-top: -4px; margin-bottom: 14px;
+}
+.chart-x-labels span { font-size: 9px; color: #BDBDBD; }
+
+/* Mood stats */
+.mood-stats {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 5px; margin-bottom: 16px;
+}
+.mood-stat {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  border: 1px solid #E0E0E0; padding: 6px 4px; background: #FAFAFA;
+}
+.mood-stat .ms-emoji { font-size: 16px; }
+.mood-stat .ms-count { font-size: 11px; font-weight: 700; color: #212121; }
+.mood-stat .ms-pct   { font-size: 9px; color: #BDBDBD; }
+
+/* Günlük notlar list */
+.notes-list { display: flex; flex-direction: column; gap: 0; }
+.note-item {
+  padding: 10px 0;
+  border-bottom: 1px solid #E0E0E0;
+  display: flex; gap: 12px; align-items: flex-start;
+  cursor: default;
+}
+.note-item:last-child { border-bottom: none; }
+.note-emoji-col {
+  flex-shrink: 0; display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.note-emoji-big { font-size: 22px; }
+.note-date-col  { flex: 1; min-width: 0; }
+.note-date      { font-size: 10px; font-weight: 700; color: #BDBDBD; letter-spacing: 0.3px; margin-bottom: 3px; }
+.note-preview   { font-size: 12px; color: #212121; line-height: 1.5; }
+.note-preview.long { color: #BDBDBD; }
+.note-tags-row  { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+.note-tag       { font-size: 9px; padding: 1px 6px; border: 1px solid #E0E0E0; color: #BDBDBD; }
+.note-shared    { font-size: 9px; color: #212121; font-weight: 700; padding: 1px 5px; border: 1px solid #212121; }
+.note-actions   { display: flex; gap: 5px; align-items: flex-start; flex-shrink: 0; }
+.note-btn       { font-size: 10px; color: #BDBDBD; cursor: default; padding: 2px 6px; border: 1px solid #E0E0E0; background: #FFF; }
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header -->
+  <div class="frame-header">
+    <span class="fh-title">WF-10 · Müşteri — Günlük ve Ruh Hali</span>
+    <span class="fh-badge">Müşteri</span>
+    <span class="fh-annotation">Emoji seçimi anlık kayıt yapmaz — Kaydet butonu gerekli · "Danışmanla paylaş" açıksa not danışman panelinde görünür</span>
+  </div>
+
+  <!-- Kriz Protokolü Bandı -->
+  <div class="crisis-band">
+    <span class="crisis-icon">⚠</span>
+    <span class="crisis-text">Kriz Protokolü Aktif</span>
+    <span style="font-size:11px;color:#BDBDBD;font-weight:400;">Yalnız değilsiniz. Hemen destek alın:</span>
+    <div class="crisis-numbers">
+      <div class="crisis-num">
+        <span>📞</span>
+        <span class="num-val">182</span>
+        <span style="font-weight:400;font-size:10px;">ALO Psikiyatri</span>
+      </div>
+      <div class="crisis-num">
+        <span>💙</span>
+        <span class="num-val">182</span>
+        <span style="font-weight:400;font-size:10px;">İntihar Önleme</span>
+      </div>
+      <div class="crisis-num">
+        <span>🚨</span>
+        <span class="num-val">112</span>
+        <span style="font-weight:400;font-size:10px;">Acil</span>
+      </div>
+    </div>
+    <span class="crisis-close">✕</span>
+  </div>
+
+  <!-- Kriz bandı annotation -->
+  <div class="crisis-annotation">
+    ↑ Bu bant: Kullanıcı 3+ gün üst üste "Çok Kötü" seçtiğinde veya not içinde anahtar kelime tespitinde otomatik tetiklenir
+  </div>
+
+  <div class="frame-body">
+
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="sb-logo">[ Logo ]</div>
+      <div class="sb-role">Müşteri</div>
+      <div class="sb-user">Zeynep Arslan</div>
+
+      <div class="sb-sec">Ana Menü</div>
+      <div class="sb-item"><span class="ic">[]</span> Ana Sayfa</div>
+      <div class="sb-item"><span class="ic">[]</span> Danışman Bul</div>
+      <div class="sb-item"><span class="ic">[]</span> Randevularım</div>
+      <div class="sb-item"><span class="ic">[]</span> Mesajlar</div>
+
+      <div class="sb-sec">Kişisel</div>
+      <div class="sb-item active"><span class="ic">[+]</span> Günlük</div>
+      <div class="sb-item"><span class="ic">[]</span> Testler</div>
+      <div class="sb-item"><span class="ic">[]</span> Ödevler</div>
+      <div class="sb-item"><span class="ic">[]</span> Paketlerim</div>
+
+      <div class="sb-spacer"></div>
+      <div class="sb-logout"><span class="ic">[]</span> Çıkış Yap →</div>
+    </div>
+
+    <!-- ── Content ── -->
+    <div class="content">
+      <div class="content-inner">
+
+        <!-- ── LEFT: Entry form ── -->
+        <div class="entry-panel">
+          <div class="entry-date">Pazartesi, 14 Nisan 2025</div>
+          <div class="entry-title">Bugün Nasıl Hissediyorsun?</div>
+
+          <!-- Emoji scale -->
+          <div class="emoji-section">
+            <div class="emoji-section-label">Ruh Halin</div>
+            <div class="emoji-scale">
+              <div class="emoji-item">
+                <div class="emoji-circle">😞</div>
+                <div class="emoji-label">Çok Kötü</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-circle">😐</div>
+                <div class="emoji-label">Kötü</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-circle">🙂</div>
+                <div class="emoji-label">Orta</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-circle selected">😊</div>
+                <div class="emoji-label selected">İyi ✓</div>
+              </div>
+              <div class="emoji-item">
+                <div class="emoji-circle">😄</div>
+                <div class="emoji-label">Harika</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Intensity slider -->
+          <div class="intensity-row">
+            <span class="intensity-label">Yoğunluk:</span>
+            <div class="intensity-track">
+              <div class="intensity-fill"></div>
+              <div class="intensity-thumb"></div>
+            </div>
+            <span class="intensity-value">7 / 10</span>
+          </div>
+
+          <!-- Note textarea -->
+          <div class="note-section">
+            <div class="note-label">Günlük Notun</div>
+            <div class="note-textarea">Bugün aklındakileri yaz — bu alan yalnızca sana ait...</div>
+            <div class="note-char-count">0 / 1000</div>
+          </div>
+
+          <!-- Tag suggestions -->
+          <div class="tag-suggestions">
+            <div class="tags-label">Etiket Ekle</div>
+            <div class="tags-row">
+              <div class="tag-chip selected">Anksiyete</div>
+              <div class="tag-chip">Uyku</div>
+              <div class="tag-chip">Aile</div>
+              <div class="tag-chip">İş</div>
+              <div class="tag-chip">İlişkiler</div>
+              <div class="tag-chip">Başarı</div>
+              <div class="tag-chip">+ Ekle</div>
+            </div>
+          </div>
+
+          <!-- Share toggle + save -->
+          <div class="form-footer">
+            <div class="share-row">
+              <div class="toggle-track">
+                <div class="toggle-thumb-off"></div>
+              </div>
+              <div>
+                <div class="share-label">Danışmanımla paylaş</div>
+                <div style="font-size:10px;color:#BDBDBD;">Dr. Ayşe Kaya randevu notlarını görebilir</div>
+              </div>
+              <div class="share-sub">Kapalı</div>
+            </div>
+            <button class="btn-save">Kaydet</button>
+          </div>
+        </div>
+
+        <!-- ── RIGHT: History ── -->
+        <div class="history-panel">
+
+          <!-- Ruh hali trendi -->
+          <div class="section-heading">
+            Son 30 Gün — Ruh Hali Trendi
+            <a>Filtrele</a>
+          </div>
+
+          <!-- Mood frequency stats -->
+          <div class="mood-stats">
+            <div class="mood-stat">
+              <span class="ms-emoji">😞</span>
+              <span class="ms-count">2</span>
+              <span class="ms-pct">%7</span>
+            </div>
+            <div class="mood-stat">
+              <span class="ms-emoji">😐</span>
+              <span class="ms-count">5</span>
+              <span class="ms-pct">%17</span>
+            </div>
+            <div class="mood-stat" style="border-color:#212121;background:#F5F5F5;">
+              <span class="ms-emoji">🙂</span>
+              <span class="ms-count" style="font-size:14px;">8</span>
+              <span class="ms-pct">%27</span>
+            </div>
+            <div class="mood-stat" style="border-color:#212121;background:#F5F5F5;">
+              <span class="ms-emoji">😊</span>
+              <span class="ms-count" style="font-size:14px;">12</span>
+              <span class="ms-pct">%40</span>
+            </div>
+            <div class="mood-stat">
+              <span class="ms-emoji">😄</span>
+              <span class="ms-count">3</span>
+              <span class="ms-pct">%10</span>
+            </div>
+          </div>
+
+          <!-- Line chart placeholder -->
+          <div class="chart-placeholder">
+            <div class="chart-placeholder-label">
+              <div class="cp-title">[ Zaman Serisi Çizgi Grafik ]</div>
+              <div>Y: 1–5 ruh hali skoru · X: Son 30 gün</div>
+              <div style="margin-top:4px;font-size:10px;">Haftalık ortalama çizgisi + günlük noktalar</div>
+            </div>
+          </div>
+          <div class="chart-x-labels">
+            <span>16 Mar</span>
+            <span>23 Mar</span>
+            <span>30 Mar</span>
+            <span>6 Nis</span>
+            <span>14 Nis</span>
+          </div>
+
+          <!-- Günlük notlarım -->
+          <div class="section-heading">
+            Günlük Notlarım
+            <a>Tümünü Gör →</a>
+          </div>
+
+          <div class="notes-list">
+
+            <!-- Not 1 -->
+            <div class="note-item">
+              <div class="note-emoji-col">
+                <div class="note-emoji-big">😊</div>
+              </div>
+              <div class="note-date-col">
+                <div class="note-date">Bugün · 14 Nisan 2025 · 09:15</div>
+                <div class="note-preview">Sabah meditasyon yaptım, güne iyi başladım. Anksiyete biraz azaldı...</div>
+                <div class="note-tags-row">
+                  <span class="note-tag">Anksiyete</span>
+                  <span class="note-shared">✓ Paylaşıldı</span>
+                </div>
+              </div>
+              <div class="note-actions">
+                <button class="note-btn">Düzenle</button>
+              </div>
+            </div>
+
+            <!-- Not 2 -->
+            <div class="note-item">
+              <div class="note-emoji-col">
+                <div class="note-emoji-big">🙂</div>
+              </div>
+              <div class="note-date-col">
+                <div class="note-date">Dün · 13 Nisan 2025 · 22:40</div>
+                <div class="note-preview">İş toplantısı stresli geçti. Akşam Dr. Kaya ile konuştuklarımı düşündüm...</div>
+                <div class="note-tags-row">
+                  <span class="note-tag">İş</span>
+                  <span class="note-tag">Stres</span>
+                </div>
+              </div>
+              <div class="note-actions">
+                <button class="note-btn">Düzenle</button>
+              </div>
+            </div>
+
+            <!-- Not 3 -->
+            <div class="note-item">
+              <div class="note-emoji-col">
+                <div class="note-emoji-big">😐</div>
+              </div>
+              <div class="note-date-col">
+                <div class="note-date">12 Nisan 2025 · 21:05</div>
+                <div class="note-preview long">Bugün pek bir şey hissetmedim. Sıradan bir gündü. Uyku sorunum devam ediyor...</div>
+                <div class="note-tags-row">
+                  <span class="note-tag">Uyku</span>
+                </div>
+              </div>
+              <div class="note-actions">
+                <button class="note-btn">Düzenle</button>
+              </div>
+            </div>
+
+            <!-- Not 4 -->
+            <div class="note-item" style="opacity:0.7;">
+              <div class="note-emoji-col">
+                <div class="note-emoji-big">😄</div>
+              </div>
+              <div class="note-date-col">
+                <div class="note-date">11 Nisan 2025 · 19:30</div>
+                <div class="note-preview">Aileyle güzel bir akşam geçirdim. Uzun süredir bu kadar rahatlamamıştım...</div>
+                <div class="note-tags-row">
+                  <span class="note-tag">Aile</span>
+                </div>
+              </div>
+              <div class="note-actions">
+                <button class="note-btn">Düzenle</button>
+              </div>
+            </div>
+
+          </div><!-- /notes-list -->
+
+        </div><!-- /history-panel -->
+      </div><!-- /content-inner -->
+    </div><!-- /content -->
+  </div><!-- /frame-body -->
+</div><!-- /wf-frame -->
+
+</body>
+</html>

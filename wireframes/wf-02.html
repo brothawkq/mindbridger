@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-02 · Müşteri Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── OUTER APP FRAME ─────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── FRAME HEADER BAR ────────────────────────────────── */
+.frame-header {
+  background: #F5F5F5;
+  border-bottom: 1.5px solid #212121;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fh-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #212121;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+.fh-badge {
+  font-size: 10px;
+  font-weight: 600;
+  border: 1.5px solid #212121;
+  padding: 1px 7px;
+  white-space: nowrap;
+  background: #FFFFFF;
+}
+.fh-annotation {
+  font-size: 10.5px;
+  color: #BDBDBD;
+  font-style: italic;
+  border-bottom: 1px dotted #BDBDBD;
+  padding-bottom: 1px;
+}
+
+/* ── MAIN BODY: sidebar + content ─────────────────────── */
+.frame-body {
+  display: flex;
+  min-height: 700px;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar {
+  width: 190px;
+  flex-shrink: 0;
+  border-right: 1.5px solid #E0E0E0;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.sb-logo {
+  border: 1.5px dashed #BDBDBD;
+  text-align: center;
+  padding: 7px 0;
+  font-size: 12px;
+  color: #BDBDBD;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.sb-role {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #BDBDBD;
+  margin-bottom: 2px;
+}
+.sb-user {
+  font-size: 12px;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 14px;
+}
+.sb-section {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #BDBDBD;
+  border-bottom: 1px dotted #E0E0E0;
+  padding-bottom: 3px;
+  margin-bottom: 6px;
+  margin-top: 8px;
+}
+.sb-nav-item {
+  font-size: 12px;
+  color: #212121;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sb-nav-item.active {
+  font-weight: 700;
+}
+.sb-nav-item .nav-icon {
+  font-size: 10px;
+  font-weight: 700;
+  color: #BDBDBD;
+  width: 14px;
+  flex-shrink: 0;
+  font-family: monospace;
+}
+.sb-nav-item.active .nav-icon {
+  color: #212121;
+}
+.sb-spacer { flex: 1; }
+.sb-logout {
+  font-size: 12px;
+  color: #BDBDBD;
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid #E0E0E0;
+  padding-top: 10px;
+  margin-top: 10px;
+}
+
+/* ── CONTENT AREA ───────────────────────────────────── */
+.content {
+  flex: 1;
+  padding: 20px 22px;
+  min-width: 0;
+}
+
+.page-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 2px;
+}
+.page-sub {
+  font-size: 11px;
+  color: #BDBDBD;
+  margin-bottom: 18px;
+}
+
+/* ── TOP 4 KPI CARDS ────────────────────────────────── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  border: 1.5px solid #E0E0E0;
+  padding: 12px 13px;
+  background: #FFFFFF;
+}
+.kpi-card .kpi-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #BDBDBD;
+  margin-bottom: 6px;
+}
+.kpi-card .kpi-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 2px;
+}
+.kpi-card .kpi-meta {
+  font-size: 10.5px;
+  color: #BDBDBD;
+}
+.kpi-card.highlight {
+  border-color: #212121;
+}
+
+/* ── MIDDLE SECTION ─────────────────────────────────── */
+.middle-row {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 14px;
+}
+
+/* Blog cards */
+.section-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: #212121;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.blog-card {
+  display: flex;
+  gap: 10px;
+  border: 1.5px solid #E0E0E0;
+  padding: 9px 10px;
+  margin-bottom: 8px;
+  background: #FFFFFF;
+}
+.blog-img {
+  width: 52px;
+  height: 42px;
+  background: #E0E0E0;
+  border: 1px solid #BDBDBD;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  color: #BDBDBD;
+  letter-spacing: 0.3px;
+}
+.blog-text .blog-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 3px;
+  line-height: 1.3;
+}
+.blog-text .blog-meta {
+  font-size: 10px;
+  color: #BDBDBD;
+}
+.blog-text .blog-tag {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border: 1px solid #E0E0E0;
+  color: #BDBDBD;
+  margin-right: 4px;
+  margin-top: 3px;
+}
+
+/* Gamification */
+.gamification-panel {
+  border: 1.5px solid #E0E0E0;
+  padding: 12px 14px;
+}
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.badge-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #212121;
+  border: 1.5px solid #212121;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.badge-circle.faded {
+  background: #F5F5F5;
+  border: 1.5px dashed #BDBDBD;
+}
+.badge-circle.faded .badge-icon {
+  opacity: 0.3;
+}
+.badge-name {
+  font-size: 9px;
+  color: #212121;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.badge-name.faded {
+  color: #BDBDBD;
+}
+
+/* Progress bar */
+.progress-section {
+  border-top: 1px solid #E0E0E0;
+  padding-top: 12px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+.progress-label .pl-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #212121;
+}
+.progress-label .pl-pct {
+  font-size: 11px;
+  font-weight: 700;
+  color: #212121;
+}
+.progress-bar-bg {
+  width: 100%;
+  height: 8px;
+  background: #E0E0E0;
+  border: 1px solid #BDBDBD;
+}
+.progress-bar-fill {
+  height: 100%;
+  width: 60%;
+  background: #212121;
+}
+.progress-note {
+  font-size: 10px;
+  color: #BDBDBD;
+  margin-top: 4px;
+}
+
+/* Status badge pill */
+.pill {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  background: #212121;
+  color: #FFFFFF;
+  border-radius: 0;
+}
+.pill.outline {
+  background: #FFFFFF;
+  color: #212121;
+  border: 1.5px solid #212121;
+}
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header bar -->
+  <div class="frame-header">
+    <span class="fh-title">WF-02 · Müşteri — Dashboard</span>
+    <span class="fh-badge">Müşteri</span>
+    <span class="fh-annotation">Randevu kartına tıklanınca randevu detay modalı açılır · Rozete tıklanınca rozet açıklaması gösterilir</span>
+  </div>
+
+  <div class="frame-body">
+
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="sb-logo">[ Logo ]</div>
+      <div class="sb-role">Müşteri</div>
+      <div class="sb-user">Zeynep Arslan</div>
+
+      <div class="sb-section">Ana Menü</div>
+      <div class="sb-nav-item active"><span class="nav-icon">[+]</span> Ana Sayfa</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Danışman Bul</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Randevularım</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Mesajlar</div>
+
+      <div class="sb-section">Kişisel</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Günlük</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Testler</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Ödevler</div>
+      <div class="sb-nav-item"><span class="nav-icon">[]</span> Paketlerim</div>
+
+      <div class="sb-spacer"></div>
+      <div class="sb-logout"><span class="nav-icon">[]</span> Çıkış Yap →</div>
+    </div>
+
+    <!-- ── Content ── -->
+    <div class="content">
+
+      <div class="page-title">Hoş geldin, Zeynep 👋</div>
+      <div class="page-sub">Bugün: Pazartesi, 14 Nisan 2025 — Son giriş: dün 21:04</div>
+
+      <!-- Top KPI cards -->
+      <div class="kpi-row">
+
+        <div class="kpi-card highlight">
+          <div class="kpi-label">Yaklaşan Randevu</div>
+          <div class="kpi-value">Pazartesi 14:00</div>
+          <div class="kpi-meta">Dr. Ayşe Kaya · Online</div>
+          <div style="margin-top:6px;"><span class="pill" style="font-size:9px;padding:2px 6px;">3 gün kaldı</span></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Ruh Hali Bugün</div>
+          <div class="kpi-value" style="font-size:22px;">😊</div>
+          <div class="kpi-meta">İyi — bugün girildi</div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Bekleyen Ödev</div>
+          <div class="kpi-value">1 ödev</div>
+          <div class="kpi-meta">Son teslim: Cuma</div>
+          <div style="margin-top:6px;"><span class="pill outline" style="font-size:9px;padding:2px 6px;">Bekliyor</span></div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Paket Durumu</div>
+          <div class="kpi-value">3 / 5 Seans</div>
+          <div class="kpi-meta">2 seans kaldı</div>
+          <div style="margin-top:6px; height:5px; background:#E0E0E0; border:1px solid #BDBDBD;"><div style="width:60%;height:100%;background:#212121;"></div></div>
+        </div>
+
+      </div>
+
+      <!-- Middle row -->
+      <div class="middle-row">
+
+        <!-- Sol: Blog içerikleri -->
+        <div>
+          <div class="section-title">Kişiselleştirilmiş İçerikler</div>
+
+          <div class="blog-card">
+            <div class="blog-img">[ Görsel ]</div>
+            <div class="blog-text">
+              <div class="blog-title">Anksiyete ile Başa Çıkmanın 5 Yolu</div>
+              <div style="margin-top:2px;">
+                <span class="blog-tag">Anksiyete</span>
+                <span class="blog-tag">Farkındalık</span>
+              </div>
+              <div class="blog-meta" style="margin-top:3px;">Dr. Ayşe Kaya · 5 dk okuma</div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-img">[ Görsel ]</div>
+            <div class="blog-text">
+              <div class="blog-title">Uyku Hijyeni Neden Bu Kadar Önemli?</div>
+              <div style="margin-top:2px;">
+                <span class="blog-tag">Uyku</span>
+                <span class="blog-tag">Sağlık</span>
+              </div>
+              <div class="blog-meta" style="margin-top:3px;">Uzm. Mert Can · 4 dk okuma</div>
+            </div>
+          </div>
+
+          <div class="blog-card">
+            <div class="blog-img">[ Görsel ]</div>
+            <div class="blog-text">
+              <div class="blog-title">İlişkilerde Sağlıklı Sınır Koyma Rehberi</div>
+              <div style="margin-top:2px;">
+                <span class="blog-tag">İlişkiler</span>
+              </div>
+              <div class="blog-meta" style="margin-top:3px;">Dr. Selin Korkmaz · 7 dk okuma</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sağ: Gamification -->
+        <div class="gamification-panel">
+          <div class="section-title">Rozetlerim</div>
+
+          <div class="badge-grid">
+            <!-- Kazanılmış -->
+            <div class="badge-item">
+              <div class="badge-circle"><span>🌱</span></div>
+              <div class="badge-name">İlk Adım</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-circle"><span>🔥</span></div>
+              <div class="badge-name">7 Gün Seri</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-circle"><span>📖</span></div>
+              <div class="badge-name">Okuyucu</div>
+            </div>
+            <!-- Kazanılmamış (soluk) -->
+            <div class="badge-item">
+              <div class="badge-circle faded"><span class="badge-icon">🏆</span></div>
+              <div class="badge-name faded">Şampiyon</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-circle faded"><span class="badge-icon">💬</span></div>
+              <div class="badge-name faded">İletişimci</div>
+            </div>
+            <div class="badge-item">
+              <div class="badge-circle faded"><span class="badge-icon">⭐</span></div>
+              <div class="badge-name faded">Yıldız</div>
+            </div>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="progress-section">
+            <div class="progress-label">
+              <span class="pl-title">Haftalık Hedef</span>
+              <span class="pl-pct">%60</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-note">3 / 5 görev tamamlandı</div>
+
+            <div style="margin-top:12px; border-top:1px solid #E0E0E0; padding-top:10px;">
+              <div class="section-title" style="margin-bottom:6px;">Bu Hafta Yapılacaklar</div>
+              <div style="font-size:11px; color:#212121; line-height:2;">
+                <div>✓ &nbsp;Günlük yaz</div>
+                <div>✓ &nbsp;Randevuya katıl</div>
+                <div>✓ &nbsp;İçerik oku</div>
+                <div style="color:#BDBDBD;">○ &nbsp;Ödevi tamamla</div>
+                <div style="color:#BDBDBD;">○ &nbsp;Ruh hali gir (Perşembe)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /content -->
+
+  </div><!-- /frame-body -->
+</div><!-- /wf-frame -->
+
+</body>
+</html>

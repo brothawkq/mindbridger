@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-01 · Giriş Ekranı</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 48px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ─── SECTION TITLE (above frame) ─────────────────────────── */
+.wf-section-title {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #212121;
+  margin-bottom: 20px;
+}
+
+/* ─── OUTER FRAME ──────────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ─── LOGIN CARD TOP (gray header) ────────────────────────── */
+.login-top {
+  background: #F5F5F5;
+  border-bottom: 1px solid #E0E0E0;
+  padding: 28px 40px 22px;
+  text-align: center;
+}
+.logo-dashed {
+  display: inline-block;
+  border: 1.5px dashed #BDBDBD;
+  padding: 10px 28px;
+  color: #BDBDBD;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+}
+.brand-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 4px;
+  letter-spacing: 0.2px;
+}
+.brand-subtitle {
+  font-size: 12px;
+  color: #BDBDBD;
+}
+
+/* ─── LOGIN FORM BODY ──────────────────────────────────────── */
+.login-body {
+  padding: 24px 40px 28px;
+}
+
+.field-label {
+  display: block;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #212121;
+  margin-bottom: 6px;
+}
+.field-label .req { color: #BDBDBD; }
+
+.input-box {
+  width: 100%;
+  border: 1.5px solid #212121;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #212121;
+  text-align: center;
+  background: #FFFFFF;
+  margin-bottom: 14px;
+  display: block;
+  position: relative;
+}
+.input-box.password {
+  letter-spacing: 4px;
+  font-size: 14px;
+}
+.input-with-icon {
+  position: relative;
+  margin-bottom: 14px;
+}
+.input-with-icon .input-box {
+  margin-bottom: 0;
+  padding-right: 36px;
+  text-align: left;
+  letter-spacing: 4px;
+}
+.eye-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #BDBDBD;
+  font-size: 14px;
+  cursor: default;
+}
+
+/* Google button */
+.btn-google {
+  width: 100%;
+  border: 1.5px solid #E0E0E0;
+  background: #FFFFFF;
+  padding: 9px;
+  font-size: 13px;
+  font-family: inherit;
+  color: #212121;
+  text-align: center;
+  cursor: default;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.g-dot {
+  width: 16px;
+  height: 16px;
+  background: #E0E0E0;
+  border-radius: 50%;
+  font-size: 9px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #BDBDBD;
+  flex-shrink: 0;
+}
+
+/* Divider */
+.or-divider {
+  text-align: center;
+  font-size: 11px;
+  color: #BDBDBD;
+  margin: 4px 0 8px;
+  position: relative;
+}
+.or-divider::before, .or-divider::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 44%;
+  height: 1px;
+  background: #E0E0E0;
+}
+.or-divider::before { left: 0; }
+.or-divider::after  { right: 0; }
+
+/* Primary button */
+.btn-primary {
+  width: 100%;
+  background: #212121;
+  color: #FFFFFF;
+  border: none;
+  padding: 11px;
+  font-size: 14px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.3px;
+  text-align: center;
+  cursor: default;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Forgot link */
+.forgot {
+  text-align: right;
+  font-size: 11px;
+  color: #212121;
+  text-decoration: underline;
+  margin-bottom: 18px;
+  cursor: pointer;
+}
+
+/* Dashed divider line */
+.dashed-sep {
+  border: none;
+  border-top: 1.5px dashed #BDBDBD;
+  margin: 16px 0;
+}
+
+/* Warning block */
+.warning-block {
+  font-size: 11.5px;
+  color: #212121;
+  line-height: 1.9;
+}
+.warning-block .w-line { display: flex; gap: 6px; align-items: flex-start; }
+.warning-block .w-line .sym { flex-shrink: 0; color: #212121; }
+
+/* Redirect info */
+.redirect-block {
+  margin-top: 14px;
+  border-top: 1px solid #E0E0E0;
+  padding-top: 12px;
+}
+.redirect-block .rb-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #212121;
+  margin-bottom: 6px;
+}
+.redirect-block .rb-row {
+  font-size: 11.5px;
+  color: #212121;
+  line-height: 1.8;
+}
+.redirect-block .rb-row span {
+  color: #BDBDBD;
+  margin-right: 2px;
+}
+
+/* ─── STATE BOXES (below frame) ─────────────────────────────── */
+.state-boxes {
+  max-width: 520px;
+  margin: 20px auto 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.state-box {
+  border: 1.5px dashed #BDBDBD;
+  padding: 14px 16px;
+  background: #FFFFFF;
+}
+.state-box .sb-title {
+  text-align: center;
+  font-size: 11px;
+  color: #BDBDBD;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+.input-error-box {
+  width: 100%;
+  border: 1.5px solid #212121;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #212121;
+  text-align: center;
+  background: #F5F5F5;
+  margin-bottom: 6px;
+  display: block;
+}
+.state-note {
+  font-size: 11px;
+  color: #BDBDBD;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Lock box */
+.lock-center {
+  text-align: center;
+}
+.lock-center .lock-sym {
+  font-size: 22px;
+  display: block;
+  margin-bottom: 6px;
+}
+.lock-center .lock-main {
+  font-size: 12px;
+  font-weight: 700;
+  color: #212121;
+  display: block;
+  margin-bottom: 4px;
+}
+.lock-center .lock-timer {
+  font-size: 20px;
+  font-weight: 700;
+  color: #212121;
+  letter-spacing: 2px;
+  display: block;
+  margin-bottom: 4px;
+}
+.lock-progress-bar {
+  width: 100%;
+  height: 4px;
+  background: #E0E0E0;
+  margin-top: 8px;
+}
+.lock-progress-fill {
+  width: 15%;
+  height: 100%;
+  background: #212121;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Page title ── -->
+<div class="wf-section-title">WF-01 &nbsp;·&nbsp; GİRİŞ EKRANI &nbsp;·&nbsp; TÜM KULLANICILAR</div>
+
+<!-- ── Main login frame ── -->
+<div class="wf-frame">
+
+  <!-- Top: logo + brand -->
+  <div class="login-top">
+    <div class="logo-dashed">[ Logo ]</div>
+    <div class="brand-title">MindBridger</div>
+    <div class="brand-subtitle">Sisteme erişmek için giriş yapın</div>
+  </div>
+
+  <!-- Form body -->
+  <div class="login-body">
+
+    <!-- E-posta -->
+    <label class="field-label">E-POSTA <span class="req">*</span></label>
+    <div class="input-box">kullanici@ornek.com</div>
+
+    <!-- Şifre -->
+    <label class="field-label">ŞİFRE <span class="req">*</span></label>
+    <div class="input-with-icon">
+      <div class="input-box" style="text-align:center; padding-right:36px;">&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;</div>
+      <span class="eye-icon">&#128065;</span>
+    </div>
+
+    <!-- Google -->
+    <div class="or-divider">veya</div>
+    <div class="btn-google">
+      <span class="g-dot">G</span>
+      Google ile Giriş
+    </div>
+
+    <!-- Giriş Yap -->
+    <div class="btn-primary">Giriş Yap</div>
+
+    <!-- Şifremi unuttum -->
+    <div class="forgot">Şifremi unuttum</div>
+
+    <!-- Uyarı bandı -->
+    <hr class="dashed-sep" />
+    <div class="warning-block">
+      <div class="w-line"><span class="sym">△</span> 5 başarısız girişte hesap 15 dk kilitlenir</div>
+      <div class="w-line"><span class="sym">↳</span> Kilitlenme süresi ekranda gösterilir</div>
+    </div>
+
+    <!-- Yönlendirme bilgisi -->
+    <div class="redirect-block">
+      <div class="rb-title">Başarılı giriş sonrası yönlendirme:</div>
+      <div class="rb-row"><span>→</span> Admin &nbsp;→&nbsp; /admin/dashboard</div>
+      <div class="rb-row"><span>→</span> Danışman &nbsp;→&nbsp; /danisan/dashboard</div>
+      <div class="rb-row"><span>→</span> Müşteri &nbsp;→&nbsp; /musteri/dashboard</div>
+      <div class="rb-row"><span>→</span> Kurumsal &nbsp;→&nbsp; /kurumsal/dashboard</div>
+    </div>
+
+  </div>
+</div><!-- /wf-frame -->
+
+<!-- ── State annotation boxes ── -->
+<div class="state-boxes">
+
+  <!-- Hata durumu -->
+  <div class="state-box">
+    <div class="sb-title">[ Hata Durumu ]</div>
+    <div class="input-error-box">yanlis@ornek.com &nbsp;⚠</div>
+    <div class="input-error-box">&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;&#xB7;</div>
+    <div class="state-note">Hatalı e-posta veya şifre<br />3/5 deneme → uyarı göster</div>
+  </div>
+
+  <!-- Kilitlenme durumu -->
+  <div class="state-box">
+    <div class="sb-title">[ Kilitlenme Durumu ]</div>
+    <div class="lock-center">
+      <span class="lock-sym">🔒</span>
+      <span class="lock-main">Hesap kilitlendi.</span>
+      <span class="lock-timer">4:32</span>
+      <div class="lock-progress-bar"><div class="lock-progress-fill"></div></div>
+    </div>
+    <div class="state-note" style="margin-top:8px;">15 dk geri sayım sayacı<br/>Form alanları devre dışı</div>
+  </div>
+
+</div>
+
+</body>
+</html>

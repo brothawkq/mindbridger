@@ -1,0 +1,40 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/hatirlatma",
+      "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/payout",
+      "schedule": "0 9 * * 5"
+    },
+    {
+      "path": "/api/cron/churn",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/kurumsal-fatura",
+      "schedule": "0 8 1 * *"
+    },
+    {
+      "path": "/api/cron/log-temizlik",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/butce-sifirla",
+      "schedule": "0 0 1 * *"
+    },
+    {
+      "path": "/api/cron/ip-temizlik",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron/hedef",
+      "schedule": "0 0 * * 1"
+    },
+    {
+      "path": "/api/cron/randevu-temizlik",
+      "schedule": "*/15 * * * *"
+    }
+  ]
+}

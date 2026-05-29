@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-08 · Admin — Finansal Yönetim</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── FRAME ──────────────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.frame-header {
+  background: #F5F5F5; border-bottom: 1.5px solid #212121;
+  padding: 7px 14px; display: flex; align-items: center; gap: 10px;
+}
+.fh-title { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+.fh-badge { font-size: 10px; font-weight: 600; border: 1.5px solid #212121; padding: 1px 7px; background: #FFFFFF; white-space: nowrap; }
+.fh-annotation { font-size: 10.5px; color: #BDBDBD; font-style: italic; border-bottom: 1px dotted #BDBDBD; padding-bottom: 1px; }
+
+/* ── BODY ───────────────────────────────────────────────── */
+.frame-body { display: flex; min-height: 680px; }
+
+/* ── SIDEBAR ─────────────────────────────────────────────── */
+.sidebar {
+  width: 188px; flex-shrink: 0;
+  border-right: 1.5px solid #E0E0E0;
+  padding: 14px; display: flex; flex-direction: column;
+}
+.sb-logo { border: 1.5px dashed #BDBDBD; text-align: center; padding: 6px 0; font-size: 12px; color: #BDBDBD; margin-bottom: 10px; }
+.sb-role { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #BDBDBD; margin-bottom: 2px; }
+.sb-user { font-size: 12px; font-weight: 700; color: #212121; margin-bottom: 12px; }
+.sb-sec  { font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #BDBDBD; border-bottom: 1px dotted #E0E0E0; padding-bottom: 3px; margin: 8px 0 5px; }
+.sb-item { font-size: 12px; color: #212121; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+.sb-item.active { font-weight: 700; }
+.ic { font-size: 10px; font-weight: 700; color: #BDBDBD; width: 14px; font-family: monospace; flex-shrink: 0; }
+.sb-item.active .ic { color: #212121; }
+.sb-spacer { flex: 1; }
+.sb-logout { font-size: 11.5px; color: #BDBDBD; border-top: 1px solid #E0E0E0; padding-top: 10px; margin-top: 10px; display: flex; gap: 6px; }
+
+/* ── CONTENT ─────────────────────────────────────────────── */
+.content { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+/* Page title row */
+.content-title-row {
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid #E0E0E0;
+  display: flex; align-items: flex-end; justify-content: space-between;
+}
+.page-title { font-size: 16px; font-weight: 700; color: #212121; }
+.page-sub   { font-size: 11px; color: #BDBDBD; margin-top: 2px; }
+.export-btns { display: flex; gap: 6px; }
+.btn-export {
+  font-size: 10.5px; font-weight: 600;
+  border: 1.5px solid #E0E0E0; background: #FFFFFF; color: #212121;
+  padding: 5px 11px; cursor: default; font-family: inherit;
+}
+
+/* ── TAB BAR ────────────────────────────────────────────── */
+.tab-bar {
+  display: flex; border-bottom: 1.5px solid #E0E0E0;
+  background: #FFFFFF; padding: 0 20px;
+}
+.tab-item {
+  padding: 10px 16px; font-size: 12px; font-weight: 600;
+  color: #BDBDBD; cursor: default;
+  border-bottom: 2.5px solid transparent; margin-bottom: -1.5px;
+  white-space: nowrap;
+}
+.tab-item.active { color: #212121; border-bottom-color: #212121; }
+
+/* ── INFO BAND ──────────────────────────────────────────── */
+.info-band {
+  background: #F5F5F5; border-bottom: 1.5px solid #212121;
+  padding: 10px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.info-band-left { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.ib-main { font-size: 13px; color: #212121; }
+.ib-main strong { font-size: 18px; font-weight: 700; }
+.ib-stat { display: flex; flex-direction: column; }
+.ib-stat .ibs-label { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #BDBDBD; }
+.ib-stat .ibs-val   { font-size: 13px; font-weight: 700; color: #212121; }
+.ib-divider { width: 1px; height: 32px; background: #E0E0E0; flex-shrink: 0; }
+
+.btn-process-all {
+  background: #212121; color: #FFFFFF; border: none;
+  padding: 9px 20px; font-size: 12px; font-weight: 700;
+  font-family: inherit; cursor: default; white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-filter {
+  background: #FFFFFF; color: #212121;
+  border: 1.5px solid #E0E0E0;
+  padding: 8px 13px; font-size: 11.5px; font-weight: 600;
+  font-family: inherit; cursor: default; display: flex; align-items: center; gap: 5px;
+}
+
+/* ── TABLE AREA ─────────────────────────────────────────── */
+.table-area { padding: 16px 20px; flex: 1; }
+
+/* Search/filter row */
+.table-controls {
+  display: flex; gap: 8px; align-items: center; margin-bottom: 12px;
+}
+.search-box {
+  border: 1.5px solid #E0E0E0; padding: 6px 10px;
+  font-size: 12px; color: #BDBDBD; background: #FFFFFF;
+  display: flex; align-items: center; gap: 7px; flex: 1;
+}
+.filter-select {
+  border: 1.5px solid #E0E0E0; padding: 6px 10px;
+  font-size: 12px; color: #212121; background: #FFFFFF;
+  font-family: inherit; display: flex; align-items: center; gap: 5px;
+}
+.filter-select .arr { color: #BDBDBD; font-size: 10px; }
+
+/* Table */
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+thead th {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #BDBDBD;
+  border-top: 1.5px solid #212121;
+  border-bottom: 1.5px solid #212121;
+  padding: 7px 10px; text-align: left;
+  background: #FAFAFA; white-space: nowrap;
+}
+thead th.right { text-align: right; }
+tbody td {
+  padding: 10px 10px;
+  border-bottom: 1px solid #E0E0E0;
+  color: #212121; vertical-align: middle;
+}
+tbody tr:last-child td { border-bottom: 1.5px solid #212121; }
+
+.td-name { font-weight: 700; font-size: 12.5px; }
+.td-sub  { font-size: 10px; color: #BDBDBD; margin-top: 1px; }
+.td-right { text-align: right; }
+.td-mono  { font-variant-numeric: tabular-nums; }
+
+/* Status pills */
+.s-pill {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; padding: 3px 9px;
+  white-space: nowrap;
+}
+/* Bekliyor = outlined */
+.s-bekliyor { border: 1.5px solid #212121; color: #212121; background: #FFFFFF; }
+/* İşleniyor = gray fill */
+.s-isleniyor { background: #BDBDBD; color: #FFFFFF; border: 1.5px solid #BDBDBD; }
+/* Ödendi = dark fill */
+.s-odendi   { background: #212121; color: #FFFFFF; border: 1.5px solid #212121; }
+
+/* Dot indicators matching status */
+.dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.dot-bekliyor { background: #FFFFFF; border: 1.5px solid #212121; }
+.dot-isleniyor{ background: #FFFFFF; }
+.dot-odendi   { background: #FFFFFF; }
+
+.btn-ode {
+  font-size: 11px; font-weight: 700;
+  border: 1.5px solid #212121; background: #FFFFFF; color: #212121;
+  padding: 5px 13px; cursor: default; font-family: inherit;
+}
+.btn-ode.done { border-color: #E0E0E0; color: #BDBDBD; cursor: not-allowed; }
+.btn-ode.processing {
+  background: #BDBDBD; color: #FFFFFF; border-color: #BDBDBD;
+}
+
+/* Commission highlight */
+.comm-text { color: #BDBDBD; font-size: 11px; }
+.net-text  { font-weight: 700; color: #212121; }
+
+/* Table footer */
+.table-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid #E0E0E0;
+}
+.tf-summary { font-size: 11px; color: #BDBDBD; }
+.tf-summary strong { color: #212121; }
+.tf-pagination { display: flex; gap: 4px; align-items: center; }
+.pg-btn {
+  width: 26px; height: 26px; border: 1.5px solid #E0E0E0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11.5px; cursor: default; background: #FFFFFF;
+}
+.pg-btn.active { background: #212121; color: #FFFFFF; border-color: #212121; font-weight: 700; }
+
+/* Summary cards row */
+.summary-cards {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-bottom: 14px;
+}
+.sum-card { border: 1.5px solid #E0E0E0; padding: 9px 11px; background: #FFFFFF; }
+.sum-card .sc-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; color: #BDBDBD; margin-bottom: 4px; }
+.sum-card .sc-val { font-size: 15px; font-weight: 700; color: #212121; }
+.sum-card .sc-sub { font-size: 10px; color: #BDBDBD; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header -->
+  <div class="frame-header">
+    <span class="fh-title">WF-08 · Admin — Finansal Yönetim</span>
+    <span class="fh-badge">Admin</span>
+    <span class="fh-annotation">Aktif sekme: Danışman Ödemeleri · "Tümünü İşle" → onay modalı açılır · Satır [ Öde ] → tekil ödeme başlatır</span>
+  </div>
+
+  <div class="frame-body">
+
+    <!-- ── Sidebar ── -->
+    <div class="sidebar">
+      <div class="sb-logo">[ Logo ]</div>
+      <div class="sb-role">Admin</div>
+      <div class="sb-user">Sistem Yöneticisi</div>
+
+      <div class="sb-sec">Genel</div>
+      <div class="sb-item"><span class="ic">[]</span> Dashboard</div>
+      <div class="sb-item"><span class="ic">[]</span> Randevular</div>
+      <div class="sb-item"><span class="ic">[]</span> Kullanıcılar</div>
+
+      <div class="sb-sec">Danışmanlar</div>
+      <div class="sb-item"><span class="ic">[]</span> Başvurular</div>
+      <div class="sb-item"><span class="ic">[]</span> Danışman Listesi</div>
+
+      <div class="sb-sec">Finans</div>
+      <div class="sb-item active"><span class="ic">[+]</span> Ödemeler</div>
+      <div class="sb-item"><span class="ic">[]</span> İadeler</div>
+      <div class="sb-item"><span class="ic">[]</span> Affiliate</div>
+      <div class="sb-item"><span class="ic">[]</span> Raporlar</div>
+
+      <div class="sb-sec">İçerik</div>
+      <div class="sb-item"><span class="ic">[]</span> Blog Yazıları</div>
+      <div class="sb-item"><span class="ic">[]</span> Testler</div>
+
+      <div class="sb-sec">Sistem</div>
+      <div class="sb-item"><span class="ic">[]</span> Ayarlar</div>
+      <div class="sb-item"><span class="ic">[]</span> Loglar</div>
+
+      <div class="sb-spacer"></div>
+      <div class="sb-logout"><span class="ic">[]</span> Çıkış Yap →</div>
+    </div>
+
+    <!-- ── Content ── -->
+    <div class="content">
+
+      <!-- Page title -->
+      <div class="content-title-row">
+        <div>
+          <div class="page-title">Finansal Yönetim</div>
+          <div class="page-sub">Haftalık ödeme dönemi: 14 — 20 Nisan 2025</div>
+        </div>
+        <div class="export-btns">
+          <div class="btn-export">↓ Excel</div>
+          <div class="btn-export">↓ PDF</div>
+        </div>
+      </div>
+
+      <!-- Tab bar -->
+      <div class="tab-bar">
+        <div class="tab-item">Tüm İşlemler</div>
+        <div class="tab-item active">Danışman Ödemeleri</div>
+        <div class="tab-item">İadeler <span style="font-size:10px;color:#BDBDBD;">(3)</span></div>
+        <div class="tab-item">Affiliate</div>
+      </div>
+
+      <!-- Info band -->
+      <div class="info-band">
+        <div class="info-band-left">
+          <div class="ib-main">
+            Bu hafta ödenmesi gereken toplam:&nbsp; <strong>₺31.200</strong>
+          </div>
+          <div class="ib-divider"></div>
+          <div class="ib-stat">
+            <span class="ibs-label">Danışman Sayısı</span>
+            <span class="ibs-val">12 danışman</span>
+          </div>
+          <div class="ib-divider"></div>
+          <div class="ib-stat">
+            <span class="ibs-label">Bekleyen</span>
+            <span class="ibs-val">₺19.400</span>
+          </div>
+          <div class="ib-divider"></div>
+          <div class="ib-stat">
+            <span class="ibs-label">İşleniyor</span>
+            <span class="ibs-val">₺7.600</span>
+          </div>
+          <div class="ib-divider"></div>
+          <div class="ib-stat">
+            <span class="ibs-label">Ödendi</span>
+            <span class="ibs-val">₺4.200</span>
+          </div>
+        </div>
+        <button class="btn-process-all">Tümünü İşle</button>
+      </div>
+
+      <!-- Table area -->
+      <div class="table-area">
+
+        <!-- Summary mini-cards -->
+        <div class="summary-cards">
+          <div class="sum-card">
+            <div class="sc-lbl">Toplam Brüt</div>
+            <div class="sc-val">₺39.000</div>
+            <div class="sc-sub">Bu hafta 78 seans</div>
+          </div>
+          <div class="sum-card">
+            <div class="sc-lbl">Toplam Komisyon</div>
+            <div class="sc-val">₺7.800</div>
+            <div class="sc-sub">%20 platform payı</div>
+          </div>
+          <div class="sum-card">
+            <div class="sc-lbl">Toplam Net</div>
+            <div class="sc-val">₺31.200</div>
+            <div class="sc-sub">Danışmanlara ödenecek</div>
+          </div>
+          <div class="sum-card">
+            <div class="sc-lbl">Ortalama / Danışman</div>
+            <div class="sc-val">₺2.600</div>
+            <div class="sc-sub">12 aktif danışman</div>
+          </div>
+        </div>
+
+        <!-- Filter controls -->
+        <div class="table-controls">
+          <div class="search-box">
+            <span style="color:#BDBDBD;font-size:12px;">🔍</span>
+            <span>Danışman ara...</span>
+          </div>
+          <div class="filter-select">Durum: Tümü <span class="arr">▾</span></div>
+          <div class="filter-select">Banka: Tümü <span class="arr">▾</span></div>
+          <div class="btn-filter">
+            ☰ Filtrele
+          </div>
+        </div>
+
+        <!-- Main table -->
+        <table>
+          <thead>
+            <tr>
+              <th>Danışman</th>
+              <th>Banka / IBAN</th>
+              <th class="right">Bu Hafta Seans</th>
+              <th class="right">Brüt</th>
+              <th class="right">Komisyon</th>
+              <th class="right">Net (Ödenecek)</th>
+              <th style="text-align:center;">Durum</th>
+              <th style="text-align:center;">Aksiyon</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <!-- Row 1: Bekliyor -->
+            <tr>
+              <td>
+                <div class="td-name">Dr. Ayşe Kaya</div>
+                <div class="td-sub">Klinik Psikolog</div>
+              </td>
+              <td>
+                <div style="font-size:11.5px;color:#212121;">Garanti Bankası</div>
+                <div class="td-sub">TR12 **** **** **** 4521</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>9</strong>
+                <div class="td-sub">seans</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>₺4.050</strong>
+              </td>
+              <td class="td-right td-mono">
+                <span class="comm-text">₺810</span>
+                <div class="td-sub">%20</div>
+              </td>
+              <td class="td-right td-mono">
+                <span class="net-text">₺3.240</span>
+              </td>
+              <td style="text-align:center;">
+                <span class="s-pill s-bekliyor"><span class="dot dot-bekliyor"></span>Bekliyor</span>
+              </td>
+              <td style="text-align:center;">
+                <button class="btn-ode">Öde</button>
+              </td>
+            </tr>
+
+            <!-- Row 2: İşleniyor -->
+            <tr>
+              <td>
+                <div class="td-name">Uzm. Mert Can</div>
+                <div class="td-sub">PDR Uzmanı</div>
+              </td>
+              <td>
+                <div style="font-size:11.5px;color:#212121;">İş Bankası</div>
+                <div class="td-sub">TR34 **** **** **** 8802</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>7</strong>
+                <div class="td-sub">seans</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>₺2.660</strong>
+              </td>
+              <td class="td-right td-mono">
+                <span class="comm-text">₺532</span>
+                <div class="td-sub">%20</div>
+              </td>
+              <td class="td-right td-mono">
+                <span class="net-text">₺2.128</span>
+              </td>
+              <td style="text-align:center;">
+                <span class="s-pill s-isleniyor"><span class="dot dot-isleniyor"></span>İşleniyor</span>
+              </td>
+              <td style="text-align:center;">
+                <button class="btn-ode processing">İşleniyor...</button>
+              </td>
+            </tr>
+
+            <!-- Row 3: Ödendi -->
+            <tr>
+              <td>
+                <div class="td-name">Dr. Selin Korkmaz</div>
+                <div class="td-sub">Psikiyatrist</div>
+              </td>
+              <td>
+                <div style="font-size:11.5px;color:#212121;">Yapı Kredi</div>
+                <div class="td-sub">TR89 **** **** **** 1107</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>12</strong>
+                <div class="td-sub">seans</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>₺7.800</strong>
+              </td>
+              <td class="td-right td-mono">
+                <span class="comm-text">₺1.560</span>
+                <div class="td-sub">%20</div>
+              </td>
+              <td class="td-right td-mono">
+                <span class="net-text">₺6.240</span>
+              </td>
+              <td style="text-align:center;">
+                <span class="s-pill s-odendi"><span class="dot dot-odendi"></span>Ödendi</span>
+              </td>
+              <td style="text-align:center;">
+                <button class="btn-ode done">Makbuz ↓</button>
+              </td>
+            </tr>
+
+            <!-- Row 4: Bekliyor -->
+            <tr>
+              <td>
+                <div class="td-name">Uzm. Elif Şahin</div>
+                <div class="td-sub">PDR Uzmanı</div>
+              </td>
+              <td>
+                <div style="font-size:11.5px;color:#212121;">Akbank</div>
+                <div class="td-sub">TR55 **** **** **** 3316</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>5</strong>
+                <div class="td-sub">seans</div>
+              </td>
+              <td class="td-right td-mono">
+                <strong>₺1.600</strong>
+              </td>
+              <td class="td-right td-mono">
+                <span class="comm-text">₺320</span>
+                <div class="td-sub">%20</div>
+              </td>
+              <td class="td-right td-mono">
+                <span class="net-text">₺1.280</span>
+              </td>
+              <td style="text-align:center;">
+                <span class="s-pill s-bekliyor"><span class="dot dot-bekliyor"></span>Bekliyor</span>
+              </td>
+              <td style="text-align:center;">
+                <button class="btn-ode">Öde</button>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+
+        <!-- Totals row -->
+        <div style="display:flex;justify-content:flex-end;padding:8px 10px;background:#F5F5F5;border:1px solid #E0E0E0;margin-top:-1px;">
+          <div style="display:flex;gap:40px;font-size:12px;">
+            <div style="text-align:right;">
+              <div style="font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#BDBDBD;margin-bottom:2px;">Toplam Brüt</div>
+              <div style="font-weight:700;color:#212121;">₺16.110</div>
+            </div>
+            <div style="text-align:right;">
+              <div style="font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#BDBDBD;margin-bottom:2px;">Toplam Komisyon</div>
+              <div style="font-weight:700;color:#BDBDBD;">₺3.222</div>
+            </div>
+            <div style="text-align:right;padding-right:90px;">
+              <div style="font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:#BDBDBD;margin-bottom:2px;">Toplam Net</div>
+              <div style="font-weight:700;color:#212121;font-size:14px;">₺12.888</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="table-footer">
+          <div class="tf-summary">
+            <strong>12</strong> danışman · Gösterilen: <strong>4</strong> · Bekleyen: <strong>8</strong> · Sayfa 1 / 3
+          </div>
+          <div class="tf-pagination">
+            <div class="pg-btn">‹</div>
+            <div class="pg-btn active">1</div>
+            <div class="pg-btn">2</div>
+            <div class="pg-btn">3</div>
+            <div class="pg-btn">›</div>
+          </div>
+        </div>
+
+      </div><!-- /table-area -->
+    </div><!-- /content -->
+  </div><!-- /frame-body -->
+</div><!-- /wf-frame -->
+
+</body>
+</html>

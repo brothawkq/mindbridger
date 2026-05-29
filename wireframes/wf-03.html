@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-03 · Danışman Keşfi ve Filtreleme</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── OUTER FRAME ─────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── FRAME HEADER BAR ────────────────────────────────── */
+.frame-header {
+  background: #F5F5F5;
+  border-bottom: 1.5px solid #212121;
+  padding: 7px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.fh-title { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+.fh-badge {
+  font-size: 10px; font-weight: 600;
+  border: 1.5px solid #212121;
+  padding: 1px 7px; background: #FFFFFF; white-space: nowrap;
+}
+.fh-annotation {
+  font-size: 10.5px; color: #BDBDBD; font-style: italic;
+  border-bottom: 1px dotted #BDBDBD; padding-bottom: 1px;
+}
+
+/* ── SEARCH BAR ROW ──────────────────────────────────── */
+.search-row {
+  padding: 14px 18px 12px;
+  border-bottom: 1px solid #E0E0E0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: #FFFFFF;
+}
+.search-input-wrap {
+  flex: 1;
+  border: 1.5px solid #212121;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #FFFFFF;
+}
+.search-input-wrap .search-icon { color: #BDBDBD; font-size: 14px; }
+.search-input-wrap .search-placeholder { font-size: 13px; color: #BDBDBD; }
+.search-results-count { font-size: 11px; color: #BDBDBD; white-space: nowrap; }
+.btn-ai {
+  background: #212121; color: #FFFFFF;
+  border: none; padding: 8px 16px;
+  font-size: 12px; font-weight: 700;
+  font-family: inherit; cursor: default;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-outline {
+  background: #FFFFFF; color: #212121;
+  border: 1.5px solid #212121; padding: 7px 14px;
+  font-size: 12px; font-weight: 600;
+  font-family: inherit; cursor: default;
+  white-space: nowrap;
+}
+
+/* ── BODY: filter + cards ────────────────────────────── */
+.frame-body { display: flex; min-height: 680px; }
+
+/* ── FILTER PANEL ────────────────────────────────────── */
+.filter-panel {
+  width: 218px;
+  flex-shrink: 0;
+  border-right: 1.5px solid #E0E0E0;
+  padding: 16px 14px;
+  background: #FAFAFA;
+}
+.filter-title {
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: #212121; margin-bottom: 14px;
+  padding-bottom: 6px; border-bottom: 1.5px solid #212121;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.filter-clear { font-size: 10px; font-weight: 400; color: #BDBDBD; text-decoration: underline; cursor: pointer; }
+
+.filter-group { margin-bottom: 14px; }
+.filter-group-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.8px; text-transform: uppercase;
+  color: #212121; margin-bottom: 7px;
+  padding-bottom: 3px; border-bottom: 1px dotted #E0E0E0;
+}
+.checkbox-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11.5px; color: #212121; padding: 3px 0;
+}
+.cb-box {
+  width: 12px; height: 12px;
+  border: 1.5px solid #212121;
+  background: #FFFFFF; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+}
+.cb-box.checked { background: #212121; color: #FFFFFF; }
+.cb-label { font-size: 11.5px; color: #212121; }
+.cb-count { font-size: 10px; color: #BDBDBD; margin-left: auto; }
+
+/* Radio */
+.radio-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11.5px; color: #212121; padding: 3px 0;
+}
+.rb-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid #212121;
+  background: #FFFFFF; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.rb-dot.checked::after {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%; background: #212121;
+}
+
+/* Range slider visual */
+.range-visual {
+  margin: 6px 0 4px;
+  position: relative; height: 20px;
+}
+.range-track {
+  height: 4px; background: #E0E0E0;
+  border: 1px solid #BDBDBD;
+  position: absolute; top: 50%; transform: translateY(-50%);
+  left: 0; right: 0;
+}
+.range-fill {
+  position: absolute; top: 0; left: 15%; right: 20%;
+  height: 100%; background: #212121;
+}
+.range-thumb {
+  width: 10px; height: 10px;
+  background: #212121; border: 1.5px solid #212121;
+  border-radius: 50%;
+  position: absolute; top: 50%; transform: translateY(-50%);
+}
+.range-thumb.left  { left: calc(15% - 5px); }
+.range-thumb.right { right: calc(20% - 5px); }
+.range-labels {
+  display: flex; justify-content: space-between;
+  font-size: 10px; color: #212121; font-weight: 600;
+  margin-top: 4px;
+}
+
+/* Dropdown visual */
+.dropdown-visual {
+  width: 100%;
+  border: 1.5px solid #E0E0E0;
+  padding: 6px 10px;
+  font-size: 11.5px; color: #212121;
+  display: flex; justify-content: space-between; align-items: center;
+  background: #FFFFFF; margin-top: 4px;
+}
+.dropdown-arrow { color: #BDBDBD; font-size: 10px; }
+
+/* Toggle switch visual */
+.toggle-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11.5px; color: #212121; margin-top: 4px;
+}
+.toggle-track {
+  width: 28px; height: 14px;
+  border: 1.5px solid #212121; border-radius: 7px;
+  background: #FFFFFF; position: relative; flex-shrink: 0;
+}
+.toggle-track.on { background: #212121; }
+.toggle-thumb {
+  width: 10px; height: 10px;
+  border-radius: 50%; background: #BDBDBD;
+  position: absolute; top: 1px; left: 1px;
+  transition: none;
+}
+.toggle-track.on .toggle-thumb { background: #FFFFFF; left: 15px; }
+
+/* Star selector visual */
+.star-row { display: flex; gap: 3px; margin-top: 4px; align-items: center; }
+.star { font-size: 14px; cursor: default; }
+.star.filled { color: #212121; }
+.star.empty  { color: #E0E0E0; }
+.star-label { font-size: 10px; color: #BDBDBD; margin-left: 4px; }
+
+/* Apply button */
+.btn-apply {
+  width: 100%; background: #212121; color: #FFFFFF;
+  border: none; padding: 9px;
+  font-size: 12px; font-weight: 700;
+  font-family: inherit; cursor: default;
+  margin-top: 14px; letter-spacing: 0.3px;
+}
+
+/* ── CARD GRID AREA ──────────────────────────────────── */
+.card-area {
+  flex: 1; padding: 16px 16px;
+  min-width: 0;
+}
+.card-area-top {
+  display: flex; align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.ca-count { font-size: 11px; color: #BDBDBD; }
+.ca-sort { font-size: 11px; color: #212121; display: flex; align-items: center; gap: 6px; }
+.sort-select {
+  border: 1.5px solid #E0E0E0; padding: 4px 8px;
+  font-size: 11px; font-family: inherit; color: #212121; background: #FFFFFF;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* Danışman kartı */
+.danisan-card {
+  border: 1.5px solid #E0E0E0;
+  background: #FFFFFF;
+  padding: 12px 12px 10px;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.danisan-card:hover { border-color: #212121; }
+
+.dc-top { display: flex; gap: 10px; align-items: flex-start; }
+.dc-photo {
+  width: 46px; height: 46px;
+  background: #E0E0E0; border: 1.5px solid #BDBDBD;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #BDBDBD;
+}
+.dc-info { flex: 1; min-width: 0; }
+.dc-name { font-size: 12.5px; font-weight: 700; color: #212121; margin-bottom: 1px; }
+.dc-title-text { font-size: 10.5px; color: #BDBDBD; margin-bottom: 5px; }
+
+.dc-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.dc-tag {
+  font-size: 9px; font-weight: 600;
+  padding: 2px 6px;
+  border: 1px solid #E0E0E0;
+  color: #212121; background: #F5F5F5;
+}
+
+.dc-divider { height: 1px; background: #E0E0E0; }
+
+.dc-meta {
+  display: flex; align-items: center;
+  justify-content: space-between;
+}
+.dc-rating { font-size: 11px; color: #212121; display: flex; align-items: center; gap: 3px; }
+.dc-rating .stars { font-size: 11px; }
+.dc-rating .count { font-size: 10px; color: #BDBDBD; }
+.dc-price { font-size: 12px; font-weight: 700; color: #212121; }
+.dc-price-sub { font-size: 9.5px; color: #BDBDBD; font-weight: 400; }
+
+.dc-sliding {
+  font-size: 10px; color: #212121;
+  border: 1px dashed #BDBDBD;
+  padding: 2px 6px; display: inline-block;
+}
+
+.btn-profile {
+  width: 100%;
+  border: 1.5px solid #212121;
+  background: #FFFFFF; color: #212121;
+  padding: 6px; font-size: 11.5px; font-weight: 600;
+  font-family: inherit; cursor: default; text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header bar -->
+  <div class="frame-header">
+    <span class="fh-title">WF-03 · Danışman Keşfi ve Filtreleme</span>
+    <span class="fh-badge">Müşteri</span>
+    <span class="fh-annotation">Filtre değişikliği kartları anlık günceller · AI Eşleştir → soru formu modalı açılır</span>
+  </div>
+
+  <!-- Search bar -->
+  <div class="search-row">
+    <div class="search-input-wrap">
+      <span class="search-icon">🔍</span>
+      <span class="search-placeholder">Danışman adı, uzmanlık alanı veya yöntem ara...</span>
+    </div>
+    <span class="search-results-count">148 danışman bulundu</span>
+    <div class="btn-outline">Sıralama ▾</div>
+    <div class="btn-ai">✦ AI ile Eşleştir</div>
+  </div>
+
+  <!-- Body -->
+  <div class="frame-body">
+
+    <!-- ── Filter Panel ── -->
+    <div class="filter-panel">
+      <div class="filter-title">
+        Filtreler
+        <span class="filter-clear">Temizle</span>
+      </div>
+
+      <!-- Uzmanlık Alanı -->
+      <div class="filter-group">
+        <div class="filter-group-title">Uzmanlık Alanı</div>
+        <div class="checkbox-row"><div class="cb-box checked">✓</div><span class="cb-label">Anksiyete</span><span class="cb-count">42</span></div>
+        <div class="checkbox-row"><div class="cb-box"></div><span class="cb-label">Depresyon</span><span class="cb-count">38</span></div>
+        <div class="checkbox-row"><div class="cb-box"></div><span class="cb-label">İlişkiler</span><span class="cb-count">31</span></div>
+        <div class="checkbox-row"><div class="cb-box"></div><span class="cb-label">Travma</span><span class="cb-count">24</span></div>
+        <div class="checkbox-row"><div class="cb-box"></div><span class="cb-label">Aile Terapisi</span><span class="cb-count">19</span></div>
+        <div style="font-size:10px;color:#BDBDBD;margin-top:4px;text-decoration:underline;cursor:pointer;">+ 12 daha göster</div>
+      </div>
+
+      <!-- Fiyat Aralığı -->
+      <div class="filter-group">
+        <div class="filter-group-title">Fiyat Aralığı</div>
+        <div class="range-visual">
+          <div class="range-track">
+            <div class="range-fill"></div>
+            <div class="range-thumb left"></div>
+            <div class="range-thumb right"></div>
+          </div>
+        </div>
+        <div class="range-labels"><span>200₺</span><span>800₺</span></div>
+      </div>
+
+      <!-- Dil -->
+      <div class="filter-group">
+        <div class="filter-group-title">Dil</div>
+        <div class="dropdown-visual">Türkçe <span class="dropdown-arrow">▾</span></div>
+      </div>
+
+      <!-- Cinsiyet -->
+      <div class="filter-group">
+        <div class="filter-group-title">Danışman Cinsiyeti</div>
+        <div class="radio-row"><div class="rb-dot checked"></div><span>Fark etmez</span></div>
+        <div class="radio-row"><div class="rb-dot"></div><span>Kadın</span></div>
+        <div class="radio-row"><div class="rb-dot"></div><span>Erkek</span></div>
+      </div>
+
+      <!-- Seans Türü -->
+      <div class="filter-group">
+        <div class="filter-group-title">Seans Türü</div>
+        <div class="checkbox-row"><div class="cb-box checked">✓</div><span class="cb-label">Online</span></div>
+        <div class="checkbox-row"><div class="cb-box"></div><span class="cb-label">Yüz Yüze</span></div>
+      </div>
+
+      <!-- Sliding Scale -->
+      <div class="filter-group">
+        <div class="filter-group-title">Sliding Scale</div>
+        <div class="toggle-row">
+          <div class="toggle-track"><div class="toggle-thumb"></div></div>
+          <span style="font-size:11px;">Esnek fiyatlı danışmanlar</span>
+        </div>
+      </div>
+
+      <!-- Min. Puan -->
+      <div class="filter-group">
+        <div class="filter-group-title">Minimum Puan</div>
+        <div class="star-row">
+          <span class="star filled">★</span>
+          <span class="star filled">★</span>
+          <span class="star filled">★</span>
+          <span class="star filled">★</span>
+          <span class="star empty">★</span>
+          <span class="star-label">4+ puan</span>
+        </div>
+      </div>
+
+      <button class="btn-apply">Filtreleri Uygula</button>
+    </div>
+
+    <!-- ── Card Area ── -->
+    <div class="card-area">
+      <div class="card-area-top">
+        <span class="ca-count">148 danışman · Anksiyete · Online · 200–800₺</span>
+        <div class="ca-sort">
+          Sırala:
+          <div class="sort-select">Önerilen ▾</div>
+        </div>
+      </div>
+
+      <div class="card-grid">
+
+        <!-- Kart 1 -->
+        <div class="danisan-card">
+          <div class="dc-top">
+            <div class="dc-photo">[ Foto ]</div>
+            <div class="dc-info">
+              <div class="dc-name">Dr. Ayşe Kaya</div>
+              <div class="dc-title-text">Klinik Psikolog · İstanbul</div>
+              <div class="dc-tags">
+                <span class="dc-tag">Anksiyete</span>
+                <span class="dc-tag">BDT</span>
+                <span class="dc-tag">Depresyon</span>
+              </div>
+            </div>
+          </div>
+          <div class="dc-divider"></div>
+          <div class="dc-meta">
+            <div class="dc-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(127)</span>
+            </div>
+            <div>
+              <span class="dc-price">450₺</span>
+              <span class="dc-price-sub">/seans</span>
+            </div>
+          </div>
+          <div class="btn-profile">Profil İncele</div>
+        </div>
+
+        <!-- Kart 2 -->
+        <div class="danisan-card">
+          <div class="dc-top">
+            <div class="dc-photo">[ Foto ]</div>
+            <div class="dc-info">
+              <div class="dc-name">Uzm. Mert Can</div>
+              <div class="dc-title-text">Psikolojik Danışman · Ankara</div>
+              <div class="dc-tags">
+                <span class="dc-tag">İlişkiler</span>
+                <span class="dc-tag">Travma</span>
+                <span class="dc-tag">EMDR</span>
+              </div>
+            </div>
+          </div>
+          <div class="dc-divider"></div>
+          <div class="dc-meta">
+            <div class="dc-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(89)</span>
+            </div>
+            <div>
+              <span class="dc-price">380₺</span>
+              <span class="dc-price-sub">/seans</span>
+            </div>
+          </div>
+          <div class="dc-sliding">⬡ Sliding Scale: 240₺</div>
+          <div class="btn-profile">Profil İncele</div>
+        </div>
+
+        <!-- Kart 3 -->
+        <div class="danisan-card">
+          <div class="dc-top">
+            <div class="dc-photo">[ Foto ]</div>
+            <div class="dc-info">
+              <div class="dc-name">Dr. Selin Korkmaz</div>
+              <div class="dc-title-text">Psikiyatrist · İzmir</div>
+              <div class="dc-tags">
+                <span class="dc-tag">Depresyon</span>
+                <span class="dc-tag">Anksiyete</span>
+                <span class="dc-tag">OKB</span>
+              </div>
+            </div>
+          </div>
+          <div class="dc-divider"></div>
+          <div class="dc-meta">
+            <div class="dc-rating">
+              <span class="stars">★★★★☆</span>
+              <span class="count">(203)</span>
+            </div>
+            <div>
+              <span class="dc-price">650₺</span>
+              <span class="dc-price-sub">/seans</span>
+            </div>
+          </div>
+          <div class="btn-profile">Profil İncele</div>
+        </div>
+
+        <!-- Kart 4 -->
+        <div class="danisan-card">
+          <div class="dc-top">
+            <div class="dc-photo">[ Foto ]</div>
+            <div class="dc-info">
+              <div class="dc-name">Uzm. Elif Şahin</div>
+              <div class="dc-title-text">PDR Uzmanı · Bursa</div>
+              <div class="dc-tags">
+                <span class="dc-tag">Aile</span>
+                <span class="dc-tag">Çift Terapisi</span>
+                <span class="dc-tag">Ergen</span>
+              </div>
+            </div>
+          </div>
+          <div class="dc-divider"></div>
+          <div class="dc-meta">
+            <div class="dc-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(54)</span>
+            </div>
+            <div>
+              <span class="dc-price">320₺</span>
+              <span class="dc-price-sub">/seans</span>
+            </div>
+          </div>
+          <div class="dc-sliding">⬡ Sliding Scale: 200₺</div>
+          <div class="btn-profile">Profil İncele</div>
+        </div>
+
+        <!-- Kart 5 -->
+        <div class="danisan-card">
+          <div class="dc-top">
+            <div class="dc-photo">[ Foto ]</div>
+            <div class="dc-info">
+              <div class="dc-name">Dr. Kemal Arslan</div>
+              <div class="dc-title-text">Klinik Psikolog · İstanbul</div>
+              <div class="dc-tags">
+                <span class="dc-tag">Travma</span>
+                <span class="dc-tag">EMDR</span>
+                <span class="dc-tag">Farkındalık</span>
+              </div>
+            </div>
+          </div>
+          <div class="dc-divider"></div>
+          <div class="dc-meta">
+            <div class="dc-rating">
+              <span class="stars">★★★★★</span>
+              <span class="count">(176)</span>
+            </div>
+            <div>
+              <span class="dc-price">550₺</span>
+              <span class="dc-price-sub">/seans</span>
+            </div>
+          </div>
+          <div class="btn-profile">Profil İncele</div>
+        </div>
+
+        <!-- Kart 6 -->
+        <div class="danisan-card">
+          <div class="dc-top">
+            <div class="dc-photo">[ Foto ]</div>
+            <div class="dc-info">
+              <div class="dc-name">Uzm. Neslihan Öz</div>
+              <div class="dc-title-text">Psikolojik Danışman · Ankara</div>
+              <div class="dc-tags">
+                <span class="dc-tag">OKB</span>
+                <span class="dc-tag">Fobiler</span>
+                <span class="dc-tag">BDT</span>
+              </div>
+            </div>
+          </div>
+          <div class="dc-divider"></div>
+          <div class="dc-meta">
+            <div class="dc-rating">
+              <span class="stars">★★★★☆</span>
+              <span class="count">(41)</span>
+            </div>
+            <div>
+              <span class="dc-price">290₺</span>
+              <span class="dc-price-sub">/seans</span>
+            </div>
+          </div>
+          <div class="btn-profile">Profil İncele</div>
+        </div>
+
+      </div><!-- /card-grid -->
+
+      <!-- Pagination -->
+      <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:18px;padding-top:14px;border-top:1px solid #E0E0E0;">
+        <div style="width:28px;height:28px;border:1.5px solid #E0E0E0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#BDBDBD;">‹</div>
+        <div style="width:28px;height:28px;border:1.5px solid #212121;background:#212121;display:flex;align-items:center;justify-content:center;font-size:12px;color:#FFF;font-weight:700;">1</div>
+        <div style="width:28px;height:28px;border:1.5px solid #E0E0E0;display:flex;align-items:center;justify-content:center;font-size:12px;">2</div>
+        <div style="width:28px;height:28px;border:1.5px solid #E0E0E0;display:flex;align-items:center;justify-content:center;font-size:12px;">3</div>
+        <div style="font-size:12px;color:#BDBDBD;padding:0 4px;">...</div>
+        <div style="width:28px;height:28px;border:1.5px solid #E0E0E0;display:flex;align-items:center;justify-content:center;font-size:12px;">25</div>
+        <div style="width:28px;height:28px;border:1.5px solid #E0E0E0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#BDBDBD;">›</div>
+      </div>
+
+    </div><!-- /card-area -->
+
+  </div><!-- /frame-body -->
+</div><!-- /wf-frame -->
+
+</body>
+</html>

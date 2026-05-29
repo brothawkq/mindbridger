@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-04 · Danışman Profil Sayfası</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── FRAME ─────────────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.frame-header {
+  background: #F5F5F5;
+  border-bottom: 1.5px solid #212121;
+  padding: 7px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.fh-title { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+.fh-badge {
+  font-size: 10px; font-weight: 600;
+  border: 1.5px solid #212121; padding: 1px 7px;
+  background: #FFFFFF; white-space: nowrap;
+}
+.fh-annotation {
+  font-size: 10.5px; color: #BDBDBD; font-style: italic;
+  border-bottom: 1px dotted #BDBDBD; padding-bottom: 1px;
+}
+
+/* ── HERO SECTION ──────────────────────────────────────── */
+.hero {
+  background: #F5F5F5;
+  border-bottom: 1.5px solid #E0E0E0;
+  padding: 20px 24px 16px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+.hero-photo {
+  width: 96px; height: 96px;
+  background: #E0E0E0;
+  border: 1.5px solid #BDBDBD;
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; color: #BDBDBD; text-align: center;
+  line-height: 1.4;
+}
+.hero-info { flex: 1; min-width: 0; }
+.hero-name {
+  font-size: 20px; font-weight: 700; color: #212121;
+  margin-bottom: 2px;
+}
+.hero-title-text {
+  font-size: 13px; color: #BDBDBD; margin-bottom: 8px;
+}
+.hero-stats {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 10px; flex-wrap: wrap;
+}
+.hero-rating {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; font-weight: 700; color: #212121;
+}
+.hero-rating .stars { font-size: 14px; letter-spacing: 1px; }
+.hero-stat-item {
+  font-size: 11.5px; color: #BDBDBD;
+  padding-left: 14px;
+  border-left: 1px solid #E0E0E0;
+}
+.hero-stat-item strong { color: #212121; }
+.hero-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.hero-badge {
+  font-size: 10px; font-weight: 700;
+  border: 1.5px solid #212121;
+  padding: 2px 8px; background: #FFFFFF;
+  display: flex; align-items: center; gap: 4px;
+}
+.hero-badge.dashed {
+  border-style: dashed; color: #BDBDBD; border-color: #BDBDBD;
+}
+
+/* Back link */
+.back-link {
+  font-size: 11px; color: #BDBDBD; text-decoration: underline;
+  cursor: pointer; align-self: flex-start; padding-top: 4px;
+  flex-shrink: 0;
+}
+
+/* ── TAB BAR ────────────────────────────────────────────── */
+.tab-bar {
+  display: flex;
+  border-bottom: 1.5px solid #E0E0E0;
+  background: #FFFFFF;
+}
+.tab-item {
+  padding: 10px 18px;
+  font-size: 12px; font-weight: 600;
+  color: #BDBDBD; cursor: default;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+}
+.tab-item.active {
+  color: #212121;
+  border-bottom-color: #212121;
+}
+
+/* ── CONTENT AREA ───────────────────────────────────────── */
+.content-area {
+  display: flex;
+  gap: 0;
+  align-items: flex-start;
+}
+
+/* Left main content */
+.main-content {
+  flex: 1;
+  padding: 20px 22px;
+  border-right: 1.5px solid #E0E0E0;
+  min-width: 0;
+}
+
+.section-heading {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 1px; text-transform: uppercase;
+  color: #212121; margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px dotted #E0E0E0;
+}
+
+/* Bio text placeholder lines */
+.bio-lines { margin-bottom: 16px; }
+.bio-line {
+  height: 11px; background: #E0E0E0;
+  border-radius: 1px; margin-bottom: 6px;
+}
+.bio-line:last-child { width: 70%; }
+
+/* Expertise tags */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 16px; }
+.expertise-tag {
+  font-size: 11px; padding: 4px 10px;
+  border: 1.5px solid #212121; background: #FFFFFF;
+  color: #212121; font-weight: 600;
+}
+.expertise-tag.secondary {
+  border-color: #E0E0E0; color: #BDBDBD; font-weight: 400;
+}
+
+/* Methods */
+.methods-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.method-card {
+  border: 1.5px solid #E0E0E0;
+  padding: 8px 12px; background: #F5F5F5;
+}
+.method-card .mc-name { font-size: 12px; font-weight: 700; color: #212121; margin-bottom: 2px; }
+.method-card .mc-sub  { font-size: 10px; color: #BDBDBD; }
+
+/* ── CALENDAR ───────────────────────────────────────────── */
+.calendar-section { margin-top: 4px; }
+.calendar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cal-nav {
+  display: flex; align-items: center; gap: 8px;
+}
+.cal-nav-btn {
+  width: 24px; height: 24px;
+  border: 1.5px solid #E0E0E0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: #212121; cursor: default;
+  background: #FFFFFF;
+}
+.cal-month { font-size: 12px; font-weight: 700; color: #212121; }
+.cal-legend { display: flex; gap: 12px; }
+.cal-legend-item { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #BDBDBD; }
+.cal-legend-dot {
+  width: 10px; height: 10px;
+  border: 1px solid #E0E0E0;
+}
+.cal-legend-dot.avail { background: #FFFFFF; border-color: #212121; }
+.cal-legend-dot.full  { background: #E0E0E0; border-color: #BDBDBD; }
+.cal-legend-dot.sel   { background: #212121; }
+
+.cal-grid { }
+.cal-dow-row {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+.cal-dow {
+  text-align: center; font-size: 9.5px; font-weight: 700;
+  letter-spacing: 0.5px; color: #BDBDBD;
+  text-transform: uppercase; padding: 4px 0;
+}
+.cal-days-row {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  margin-bottom: 3px;
+}
+.cal-day {
+  height: 30px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: #212121;
+  border: 1.5px solid #E0E0E0;
+  cursor: default; background: #FFFFFF;
+}
+.cal-day.available { border-color: #212121; background: #FFFFFF; }
+.cal-day.full      { background: #E0E0E0; border-color: #BDBDBD; color: #BDBDBD; }
+.cal-day.selected  { background: #212121; border-color: #212121; color: #FFFFFF; }
+.cal-day.today     { font-weight: 700; border-color: #212121; border-width: 2px; }
+.cal-day.empty     { border-color: transparent; background: transparent; color: #E0E0E0; }
+.cal-day.strikethrough {
+  background: #F5F5F5; color: #BDBDBD; border-color: #E0E0E0;
+  position: relative; overflow: hidden;
+}
+.cal-day.strikethrough::after {
+  content: '';
+  position: absolute; top: 50%; left: 0; right: 0;
+  height: 1px; background: #BDBDBD;
+  transform: rotate(-20deg);
+}
+
+/* ── RIGHT STICKY PANEL ─────────────────────────────────── */
+.booking-panel {
+  width: 240px;
+  flex-shrink: 0;
+  padding: 18px 16px;
+  position: sticky;
+  top: 20px;
+  align-self: flex-start;
+}
+.bp-price-main {
+  font-size: 22px; font-weight: 700; color: #212121;
+  margin-bottom: 2px;
+}
+.bp-price-sub { font-size: 11px; color: #BDBDBD; margin-bottom: 10px; }
+
+.bp-divider { height: 1px; background: #E0E0E0; margin: 10px 0; }
+
+.bp-sliding {
+  border: 1.5px dashed #BDBDBD;
+  padding: 8px 10px; margin-bottom: 8px;
+  background: #F5F5F5;
+}
+.bp-sliding .ss-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: #BDBDBD; margin-bottom: 3px;
+}
+.bp-sliding .ss-price {
+  font-size: 17px; font-weight: 700; color: #212121;
+}
+.bp-sliding .ss-note { font-size: 10px; color: #BDBDBD; }
+
+.bp-package {
+  border: 1.5px solid #E0E0E0;
+  padding: 8px 10px; margin-bottom: 14px;
+}
+.bp-package .pkg-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: #BDBDBD; margin-bottom: 4px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.pkg-discount {
+  font-size: 9px; font-weight: 700;
+  background: #212121; color: #FFFFFF;
+  padding: 1px 5px;
+}
+.bp-package .pkg-price {
+  font-size: 15px; font-weight: 700; color: #212121;
+}
+.bp-package .pkg-note { font-size: 10px; color: #BDBDBD; margin-top: 2px; }
+
+.btn-secondary-full {
+  width: 100%; border: 1.5px solid #212121;
+  background: #FFFFFF; color: #212121;
+  padding: 9px; font-size: 12px; font-weight: 700;
+  font-family: inherit; cursor: default;
+  text-align: center; margin-bottom: 8px; display: block;
+}
+.btn-primary-full {
+  width: 100%; border: none;
+  background: #212121; color: #FFFFFF;
+  padding: 10px; font-size: 13px; font-weight: 700;
+  font-family: inherit; cursor: default;
+  text-align: center; margin-bottom: 8px; display: block;
+  letter-spacing: 0.3px;
+}
+.btn-link-sm {
+  width: 100%; text-align: center;
+  font-size: 11px; color: #BDBDBD;
+  text-decoration: underline; cursor: pointer;
+  display: block; padding: 4px 0;
+}
+
+.bp-info-row {
+  display: flex; gap: 6px; margin-top: 14px;
+  padding-top: 12px; border-top: 1px solid #E0E0E0;
+  flex-direction: column; gap: 4px;
+}
+.bp-info-item {
+  font-size: 10.5px; color: #BDBDBD;
+  display: flex; gap: 5px; align-items: center;
+}
+.bp-info-item::before { content: '✓'; color: #212121; font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header -->
+  <div class="frame-header">
+    <span class="fh-title">WF-04 · Danışman Profil Sayfası</span>
+    <span class="fh-badge">Müşteri / Misafir</span>
+    <span class="fh-annotation">Sekme değişikliği içeriği günceller · Takvim günü seçimi randevu sihirbazını başlatır</span>
+  </div>
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-photo">[ Fotoğraf<br/>120×120 ]</div>
+    <div class="hero-info">
+      <div class="hero-name">Dr. Ayşe Kaya</div>
+      <div class="hero-title-text">Klinik Psikolog &nbsp;·&nbsp; İstanbul &nbsp;·&nbsp; Online & Yüz Yüze</div>
+      <div class="hero-stats">
+        <div class="hero-rating">
+          <span class="stars">★★★★★</span>
+          <span>4.9</span>
+        </div>
+        <div class="hero-stat-item"><strong>247</strong> seans tamamlandı</div>
+        <div class="hero-stat-item"><strong>5 yıl</strong> deneyim</div>
+        <div class="hero-stat-item"><strong>Türkçe</strong>, İngilizce</div>
+      </div>
+      <div class="hero-badges">
+        <div class="hero-badge">🏅 Doğrulanmış Üye</div>
+        <div class="hero-badge">⭐ Süper Danışman</div>
+        <div class="hero-badge dashed">⬡ Sliding Scale</div>
+      </div>
+    </div>
+    <div class="back-link">← Danışman Listesi</div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-bar">
+    <div class="tab-item active">Hakkımda</div>
+    <div class="tab-item">Uzmanlık & Yöntem</div>
+    <div class="tab-item">Eğitim / CV</div>
+    <div class="tab-item">Değerlendirmeler <span style="font-size:10px;color:#BDBDBD;">(127)</span></div>
+  </div>
+
+  <!-- Content: left + right -->
+  <div class="content-area">
+
+    <!-- Left main -->
+    <div class="main-content">
+
+      <!-- Bio -->
+      <div class="section-heading">Hakkımda</div>
+      <div class="bio-lines">
+        <div class="bio-line" style="width:100%;"></div>
+        <div class="bio-line" style="width:96%;"></div>
+        <div class="bio-line" style="width:88%;"></div>
+        <div class="bio-line" style="width:70%;"></div>
+      </div>
+
+      <!-- Uzmanlık alanları -->
+      <div class="section-heading">Uzmanlık Alanları</div>
+      <div class="tag-cloud" style="margin-bottom:20px;">
+        <span class="expertise-tag">Anksiyete</span>
+        <span class="expertise-tag">Depresyon</span>
+        <span class="expertise-tag">İlişkiler</span>
+        <span class="expertise-tag">Travma</span>
+        <span class="expertise-tag secondary">Aile Terapisi</span>
+        <span class="expertise-tag secondary">Fobiler</span>
+        <span class="expertise-tag secondary">OKB</span>
+        <span class="expertise-tag secondary">Yas</span>
+      </div>
+
+      <!-- Çalışma yöntemleri -->
+      <div class="section-heading">Çalışma Yöntemleri</div>
+      <div class="methods-row">
+        <div class="method-card">
+          <div class="mc-name">Bilişsel Davranışçı Terapi (BDT)</div>
+          <div class="mc-sub">Yapılandırılmış · Kanıta dayalı</div>
+        </div>
+        <div class="method-card">
+          <div class="mc-name">Farkındalık (Mindfulness)</div>
+          <div class="mc-sub">Şimdiki an farkındalığı</div>
+        </div>
+        <div class="method-card">
+          <div class="mc-name">EMDR</div>
+          <div class="mc-sub">Travma işleme</div>
+        </div>
+      </div>
+
+      <!-- 30-Gün Takvim -->
+      <div class="section-heading">Müsaitlik Takvimi — Nisan 2025</div>
+      <div class="calendar-section">
+        <div class="calendar-header">
+          <div class="cal-nav">
+            <div class="cal-nav-btn">‹</div>
+            <div class="cal-month">Nisan 2025</div>
+            <div class="cal-nav-btn">›</div>
+          </div>
+          <div class="cal-legend">
+            <div class="cal-legend-item"><div class="cal-legend-dot avail"></div> Müsait</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot full"></div> Dolu</div>
+            <div class="cal-legend-item"><div class="cal-legend-dot sel"></div> Seçili</div>
+          </div>
+        </div>
+
+        <div class="cal-dow-row">
+          <div class="cal-dow">Pzt</div><div class="cal-dow">Sal</div>
+          <div class="cal-dow">Çar</div><div class="cal-dow">Per</div>
+          <div class="cal-dow">Cum</div><div class="cal-dow">Cmt</div>
+          <div class="cal-dow">Paz</div>
+        </div>
+
+        <!-- Hafta 1 (Nis 1–6, Paz=boş) -->
+        <div class="cal-days-row">
+          <div class="cal-day available">1</div>
+          <div class="cal-day available">2</div>
+          <div class="cal-day full strikethrough">3</div>
+          <div class="cal-day available">4</div>
+          <div class="cal-day available">5</div>
+          <div class="cal-day full strikethrough">6</div>
+          <div class="cal-day empty">—</div>
+        </div>
+        <!-- Hafta 2 -->
+        <div class="cal-days-row">
+          <div class="cal-day full strikethrough">7</div>
+          <div class="cal-day available">8</div>
+          <div class="cal-day available">9</div>
+          <div class="cal-day today">10</div>
+          <div class="cal-day available">11</div>
+          <div class="cal-day full strikethrough">12</div>
+          <div class="cal-day empty">—</div>
+        </div>
+        <!-- Hafta 3 -->
+        <div class="cal-days-row">
+          <div class="cal-day available">14</div>
+          <div class="cal-day selected">15</div>
+          <div class="cal-day available">16</div>
+          <div class="cal-day available">17</div>
+          <div class="cal-day full strikethrough">18</div>
+          <div class="cal-day full strikethrough">19</div>
+          <div class="cal-day empty">—</div>
+        </div>
+        <!-- Hafta 4 -->
+        <div class="cal-days-row">
+          <div class="cal-day available">21</div>
+          <div class="cal-day available">22</div>
+          <div class="cal-day full strikethrough">23</div>
+          <div class="cal-day available">24</div>
+          <div class="cal-day available">25</div>
+          <div class="cal-day full strikethrough">26</div>
+          <div class="cal-day empty">—</div>
+        </div>
+        <!-- Hafta 5 -->
+        <div class="cal-days-row">
+          <div class="cal-day available">28</div>
+          <div class="cal-day available">29</div>
+          <div class="cal-day available">30</div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+          <div class="cal-day empty"></div>
+        </div>
+
+        <div style="margin-top:8px;font-size:10.5px;color:#BDBDBD;">
+          * 15 Nisan seçili — Randevu almak için sağdaki butonu kullanın
+        </div>
+      </div>
+
+    </div><!-- /main-content -->
+
+    <!-- Right booking panel -->
+    <div class="booking-panel">
+
+      <div class="bp-price-main">450₺</div>
+      <div class="bp-price-sub">/ seans (50 dakika)</div>
+
+      <!-- Sliding Scale -->
+      <div class="bp-sliding">
+        <div class="ss-label">⬡ Sliding Scale</div>
+        <div class="ss-price">280₺</div>
+        <div class="ss-note">Gelir durumuna göre esnek fiyat</div>
+      </div>
+
+      <!-- Paket -->
+      <div class="bp-package">
+        <div class="pkg-label">
+          Paket Fiyatı
+          <span class="pkg-discount">%10 İndirim</span>
+        </div>
+        <div class="pkg-price">1.620₺</div>
+        <div class="pkg-note">4 seans · 450₺ yerine 405₺/seans</div>
+      </div>
+
+      <div class="bp-divider"></div>
+
+      <div class="btn-secondary-full">Ücretsiz Ön Görüşme (15 dk)</div>
+      <div class="btn-primary-full">Randevu Al</div>
+      <div class="btn-link-sm">Bekleme Listesine Gir</div>
+
+      <div class="bp-info-row">
+        <div class="bp-info-item">Ücretsiz iptal (24 saat öncesine kadar)</div>
+        <div class="bp-info-item">Güvenli ödeme · iyzico</div>
+        <div class="bp-info-item">Ortalama yanıt: 2 saat</div>
+      </div>
+
+    </div>
+
+  </div><!-- /content-area -->
+</div>
+
+</body>
+</html>

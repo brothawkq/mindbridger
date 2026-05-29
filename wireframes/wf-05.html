@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WF-05 · Randevu Alma Sihirbazı</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: system-ui, Arial, sans-serif;
+  font-size: 13px;
+  background: #F5F5F5;
+  color: #212121;
+  padding: 40px 40px 80px;
+  line-height: 1.4;
+}
+
+/* ── FRAME ──────────────────────────────────────────────── */
+.wf-frame {
+  border: 1.5px solid #212121;
+  background: #FFFFFF;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.frame-header {
+  background: #F5F5F5;
+  border-bottom: 1.5px solid #212121;
+  padding: 7px 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.fh-title { font-size: 12px; font-weight: 700; color: #212121; white-space: nowrap; }
+.fh-badge {
+  font-size: 10px; font-weight: 600;
+  border: 1.5px solid #212121; padding: 1px 7px;
+  background: #FFFFFF; white-space: nowrap;
+}
+.fh-annotation {
+  font-size: 10.5px; color: #BDBDBD; font-style: italic;
+  border-bottom: 1px dotted #BDBDBD; padding-bottom: 1px;
+}
+
+/* ── DANIŞMAN ÖZET ÇUBUĞU ───────────────────────────────── */
+.therapist-bar {
+  background: #F5F5F5;
+  border-bottom: 1px solid #E0E0E0;
+  padding: 10px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.tb-photo {
+  width: 36px; height: 36px;
+  background: #E0E0E0; border: 1px solid #BDBDBD;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px; color: #BDBDBD; flex-shrink: 0;
+}
+.tb-name { font-size: 13px; font-weight: 700; color: #212121; }
+.tb-meta { font-size: 11px; color: #BDBDBD; }
+.tb-price { margin-left: auto; font-size: 14px; font-weight: 700; color: #212121; }
+
+/* ── STEP INDICATOR ─────────────────────────────────────── */
+.stepper {
+  padding: 20px 32px 16px;
+  border-bottom: 1px solid #E0E0E0;
+  display: flex; align-items: center; gap: 0;
+}
+.step {
+  display: flex; align-items: center; gap: 8px;
+  flex: 1;
+}
+.step:last-child { flex: none; }
+
+.step-circle {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid #BDBDBD;
+  background: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #BDBDBD;
+  flex-shrink: 0; position: relative; z-index: 1;
+}
+.step-circle.done {
+  background: #212121; border-color: #212121; color: #FFFFFF;
+}
+.step-circle.active {
+  background: #212121; border-color: #212121; color: #FFFFFF;
+  box-shadow: 0 0 0 3px #E0E0E0;
+}
+
+.step-label { display: flex; flex-direction: column; }
+.step-label .sl-num {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: #BDBDBD;
+}
+.step-label .sl-num.done-text  { color: #212121; }
+.step-label .sl-num.active-text{ color: #212121; }
+.step-label .sl-title {
+  font-size: 12px; font-weight: 400; color: #BDBDBD;
+}
+.step-label .sl-title.done-text  { color: #212121; }
+.step-label .sl-title.active-text{ color: #212121; font-weight: 700; }
+
+/* Connector line */
+.step-connector {
+  flex: 1; height: 1.5px;
+  background: #E0E0E0; margin: 0 8px;
+  position: relative;
+}
+.step-connector.done-line { background: #212121; }
+
+/* ── MAIN CONTENT: calendar + slots ────────────────────── */
+.wizard-body { padding: 20px 24px; }
+
+.wizard-title {
+  font-size: 15px; font-weight: 700; color: #212121; margin-bottom: 4px;
+}
+.wizard-sub {
+  font-size: 11px; color: #BDBDBD; margin-bottom: 18px;
+}
+
+.picker-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Calendar picker */
+.cal-picker { border: 1.5px solid #E0E0E0; padding: 14px; }
+.cal-header-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.cal-nav-btn {
+  width: 22px; height: 22px;
+  border: 1.5px solid #E0E0E0; background: #FFFFFF;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; cursor: default;
+}
+.cal-month-label { font-size: 12px; font-weight: 700; color: #212121; }
+
+.cal-dow-row {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 4px;
+}
+.cal-dow {
+  text-align: center; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.5px; color: #BDBDBD; text-transform: uppercase;
+  padding: 3px 0;
+}
+.cal-days-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+.cal-d {
+  height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 500; color: #212121;
+  border: 1px solid #E0E0E0; background: #FFFFFF;
+  cursor: default; position: relative;
+}
+.cal-d.avail   { border-color: #212121; }
+.cal-d.full    { background: #E0E0E0; border-color: #BDBDBD; color: #BDBDBD; }
+.cal-d.full::after {
+  content: ''; position: absolute;
+  top: 50%; left: 0; right: 0; height: 1px;
+  background: #BDBDBD; transform: rotate(-15deg);
+}
+.cal-d.selected { background: #212121; border-color: #212121; color: #FFF; font-weight: 700; }
+.cal-d.today    { border-color: #212121; border-width: 2px; font-weight: 700; }
+.cal-d.empty    { border-color: transparent; background: transparent; }
+
+/* Time slots panel */
+.slots-panel { border: 1.5px solid #E0E0E0; padding: 14px; }
+.slots-day-label {
+  font-size: 12px; font-weight: 700; color: #212121;
+  margin-bottom: 4px;
+}
+.slots-sub {
+  font-size: 10.5px; color: #BDBDBD; margin-bottom: 12px;
+}
+.slots-section-label {
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: #BDBDBD;
+  margin-bottom: 6px; margin-top: 10px;
+}
+.slots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.slot {
+  height: 32px;
+  border: 1.5px solid #E0E0E0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #212121;
+  background: #FFFFFF; cursor: default;
+}
+.slot.available  { border-color: #212121; }
+.slot.selected   { background: #212121; border-color: #212121; color: #FFFFFF; }
+.slot.full       { background: #F5F5F5; color: #BDBDBD; border-color: #E0E0E0; }
+.slot.full span  { text-decoration: line-through; }
+
+.no-slots {
+  font-size: 11px; color: #BDBDBD; text-align: center;
+  padding: 16px; border: 1px dashed #E0E0E0; margin-top: 8px;
+}
+
+/* ── SUMMARY CARD ───────────────────────────────────────── */
+.summary-card {
+  border: 1.5px solid #212121;
+  padding: 12px 16px;
+  background: #F5F5F5;
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+.sc-item { display: flex; flex-direction: column; }
+.sc-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.7px; text-transform: uppercase; color: #BDBDBD; }
+.sc-value { font-size: 13px; font-weight: 700; color: #212121; }
+
+/* ── REPEAT TOGGLE ──────────────────────────────────────── */
+.repeat-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  border: 1.5px dashed #BDBDBD;
+  margin-bottom: 20px;
+  background: #FAFAFA;
+}
+.toggle-track {
+  width: 30px; height: 16px;
+  border-radius: 8px; border: 1.5px solid #212121;
+  background: #212121; position: relative; flex-shrink: 0;
+}
+.toggle-thumb {
+  width: 11px; height: 11px;
+  border-radius: 50%; background: #FFFFFF;
+  position: absolute; top: 1.5px; right: 2px;
+}
+.repeat-label { font-size: 12px; font-weight: 700; color: #212121; }
+.repeat-sub   { font-size: 10.5px; color: #BDBDBD; margin-left: auto; }
+
+/* ── BOTTOM NAV ─────────────────────────────────────────── */
+.wizard-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px;
+  border-top: 1.5px solid #E0E0E0;
+  background: #F5F5F5;
+}
+.btn-back {
+  border: 1.5px solid #E0E0E0;
+  background: #FFFFFF; color: #212121;
+  padding: 9px 20px; font-size: 12px; font-weight: 700;
+  font-family: inherit; cursor: default;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-next {
+  background: #212121; color: #FFFFFF; border: none;
+  padding: 10px 24px; font-size: 13px; font-weight: 700;
+  font-family: inherit; cursor: default;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-next.disabled { background: #BDBDBD; cursor: not-allowed; }
+.footer-note { font-size: 10.5px; color: #BDBDBD; }
+</style>
+</head>
+<body>
+
+<div class="wf-frame">
+
+  <!-- Frame header -->
+  <div class="frame-header">
+    <span class="fh-title">WF-05 · Randevu Alma Sihirbazı</span>
+    <span class="fh-badge">Müşteri</span>
+    <span class="fh-annotation">Adım 2 aktif gösterilmektedir · Geri → Adım 1'e döner · İleri → saat seçilmeden aktif olmaz</span>
+  </div>
+
+  <!-- Danışman özet çubuğu -->
+  <div class="therapist-bar">
+    <div class="tb-photo">[ Foto ]</div>
+    <div>
+      <div class="tb-name">Dr. Ayşe Kaya</div>
+      <div class="tb-meta">Klinik Psikolog · Online Seans</div>
+    </div>
+    <div class="tb-price">450₺ <span style="font-size:11px;font-weight:400;color:#BDBDBD;">/ seans</span></div>
+  </div>
+
+  <!-- Step indicator -->
+  <div class="stepper">
+
+    <!-- Adım 1: Tamamlandı -->
+    <div class="step">
+      <div class="step-circle done">✓</div>
+      <div class="step-label">
+        <span class="sl-num done-text">Adım 1</span>
+        <span class="sl-title done-text">Seans Türü</span>
+      </div>
+    </div>
+    <div class="step-connector done-line"></div>
+
+    <!-- Adım 2: Aktif -->
+    <div class="step">
+      <div class="step-circle active">2</div>
+      <div class="step-label">
+        <span class="sl-num active-text">Adım 2</span>
+        <span class="sl-title active-text">Tarih / Saat</span>
+      </div>
+    </div>
+    <div class="step-connector"></div>
+
+    <!-- Adım 3: İleri (soluk) -->
+    <div class="step">
+      <div class="step-circle">3</div>
+      <div class="step-label">
+        <span class="sl-num">Adım 3</span>
+        <span class="sl-title">Paket / Tekil</span>
+      </div>
+    </div>
+    <div class="step-connector"></div>
+
+    <!-- Adım 4: İleri (soluk) -->
+    <div class="step" style="flex:none;">
+      <div class="step-circle">4</div>
+      <div class="step-label">
+        <span class="sl-num">Adım 4</span>
+        <span class="sl-title">Ödeme</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Wizard body -->
+  <div class="wizard-body">
+
+    <div class="wizard-title">Tarih ve Saat Seçin</div>
+    <div class="wizard-sub">Müsait günleri ve saatleri görüntüleyin · Dolu slotlar çizgili gösterilir</div>
+
+    <!-- Calendar + Slots -->
+    <div class="picker-row">
+
+      <!-- Takvim -->
+      <div class="cal-picker">
+        <div class="cal-header-row">
+          <div class="cal-nav-btn">‹</div>
+          <div class="cal-month-label">Nisan 2025</div>
+          <div class="cal-nav-btn">›</div>
+        </div>
+
+        <div class="cal-dow-row">
+          <div class="cal-dow">Pzt</div>
+          <div class="cal-dow">Sal</div>
+          <div class="cal-dow">Çar</div>
+          <div class="cal-dow">Per</div>
+          <div class="cal-dow">Cum</div>
+          <div class="cal-dow">Cmt</div>
+          <div class="cal-dow">Paz</div>
+        </div>
+
+        <div class="cal-days-grid">
+          <!-- Hafta 1 -->
+          <div class="cal-d avail">1</div>
+          <div class="cal-d avail">2</div>
+          <div class="cal-d full">3</div>
+          <div class="cal-d avail">4</div>
+          <div class="cal-d avail">5</div>
+          <div class="cal-d full">6</div>
+          <div class="cal-d empty"></div>
+          <!-- Hafta 2 -->
+          <div class="cal-d full">7</div>
+          <div class="cal-d avail">8</div>
+          <div class="cal-d avail">9</div>
+          <div class="cal-d today">10</div>
+          <div class="cal-d avail">11</div>
+          <div class="cal-d full">12</div>
+          <div class="cal-d empty"></div>
+          <!-- Hafta 3 -->
+          <div class="cal-d avail">14</div>
+          <div class="cal-d selected">15</div>
+          <div class="cal-d avail">16</div>
+          <div class="cal-d avail">17</div>
+          <div class="cal-d full">18</div>
+          <div class="cal-d full">19</div>
+          <div class="cal-d empty"></div>
+          <!-- Hafta 4 -->
+          <div class="cal-d avail">21</div>
+          <div class="cal-d avail">22</div>
+          <div class="cal-d full">23</div>
+          <div class="cal-d avail">24</div>
+          <div class="cal-d avail">25</div>
+          <div class="cal-d full">26</div>
+          <div class="cal-d empty"></div>
+          <!-- Hafta 5 -->
+          <div class="cal-d avail">28</div>
+          <div class="cal-d avail">29</div>
+          <div class="cal-d avail">30</div>
+          <div class="cal-d empty"></div>
+          <div class="cal-d empty"></div>
+          <div class="cal-d empty"></div>
+          <div class="cal-d empty"></div>
+        </div>
+
+        <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#BDBDBD;">
+            <div style="width:10px;height:10px;border:1.5px solid #212121;background:#FFF;"></div> Müsait
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#BDBDBD;">
+            <div style="width:10px;height:10px;background:#E0E0E0;border:1px solid #BDBDBD;"></div> Dolu
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:10px;color:#BDBDBD;">
+            <div style="width:10px;height:10px;background:#212121;"></div> Seçili
+          </div>
+        </div>
+      </div>
+
+      <!-- Saat slotları -->
+      <div class="slots-panel">
+        <div class="slots-day-label">15 Nisan 2025, Salı</div>
+        <div class="slots-sub">9 müsait slot · 1 saat seçildi</div>
+
+        <div class="slots-section-label">Sabah</div>
+        <div class="slots-grid">
+          <div class="slot full"><span>09:00</span></div>
+          <div class="slot available">10:00</div>
+          <div class="slot selected">11:00</div>
+        </div>
+
+        <div class="slots-section-label">Öğleden Sonra</div>
+        <div class="slots-grid">
+          <div class="slot available">13:00</div>
+          <div class="slot available">14:00</div>
+          <div class="slot full"><span>15:00</span></div>
+          <div class="slot available">16:00</div>
+          <div class="slot available">17:00</div>
+          <div class="slot full"><span>18:00</span></div>
+        </div>
+
+        <div class="slots-section-label">Akşam</div>
+        <div class="slots-grid">
+          <div class="slot available">19:00</div>
+          <div class="slot available">20:00</div>
+          <div class="slot full"><span>21:00</span></div>
+        </div>
+
+        <div style="margin-top:12px;padding:8px 10px;background:#F5F5F5;border:1px solid #E0E0E0;">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#BDBDBD;margin-bottom:3px;">Seçilen</div>
+          <div style="font-size:13px;font-weight:700;color:#212121;">15 Nisan 2025, 11:00</div>
+          <div style="font-size:10.5px;color:#BDBDBD;">Online · 50 dakika</div>
+        </div>
+      </div>
+
+    </div><!-- /picker-row -->
+
+    <!-- Özet -->
+    <div class="summary-card">
+      <div class="sc-item">
+        <span class="sc-label">Danışman</span>
+        <span class="sc-value">Dr. Ayşe Kaya</span>
+      </div>
+      <div style="width:1px;height:36px;background:#E0E0E0;"></div>
+      <div class="sc-item">
+        <span class="sc-label">Seans Türü</span>
+        <span class="sc-value">Online · 50 dk</span>
+      </div>
+      <div style="width:1px;height:36px;background:#E0E0E0;"></div>
+      <div class="sc-item">
+        <span class="sc-label">Tarih & Saat</span>
+        <span class="sc-value">15 Nis 2025 · 11:00</span>
+      </div>
+      <div style="width:1px;height:36px;background:#E0E0E0;"></div>
+      <div class="sc-item">
+        <span class="sc-label">Ücret</span>
+        <span class="sc-value">450₺</span>
+      </div>
+    </div>
+
+    <!-- Tekrarlayan randevu toggle -->
+    <div class="repeat-row">
+      <div class="toggle-track">
+        <div class="toggle-thumb"></div>
+      </div>
+      <div>
+        <div class="repeat-label">Her hafta tekrarla</div>
+        <div style="font-size:10.5px;color:#BDBDBD;">Aynı gün ve saat · İptal edilene kadar devam eder</div>
+      </div>
+      <div class="repeat-sub">Aktif — Her Salı 11:00</div>
+    </div>
+
+  </div><!-- /wizard-body -->
+
+  <!-- Footer nav -->
+  <div class="wizard-footer">
+    <div class="btn-back">← Geri</div>
+    <div class="footer-note">Adım 2 / 4 · Saat seçildi</div>
+    <div class="btn-next">İleri →</div>
+  </div>
+
+</div>
+
+</body>
+</html>
