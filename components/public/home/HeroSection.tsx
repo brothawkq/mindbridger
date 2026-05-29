@@ -15,7 +15,7 @@ const CATEGORIES = [
     sub: "Kendim için",
     bg: "#397A4A",
     illustration: (
-      <svg viewBox="0 0 80 80" fill="none" className="w-14 h-14 mx-auto">
+      <svg viewBox="0 0 80 80" fill="none" className="w-8 h-8 sm:w-14 sm:h-14 mx-auto">
         <circle cx="40" cy="28" r="14" fill="rgba(255,255,255,0.25)" />
         <circle cx="40" cy="28" r="10" fill="rgba(255,255,255,0.55)" />
         <ellipse cx="40" cy="58" rx="20" ry="10" fill="rgba(255,255,255,0.2)" />
@@ -31,7 +31,7 @@ const CATEGORIES = [
     sub: "Partnerimle birlikte",
     bg: "#457777",
     illustration: (
-      <svg viewBox="0 0 80 80" fill="none" className="w-14 h-14 mx-auto">
+      <svg viewBox="0 0 80 80" fill="none" className="w-8 h-8 sm:w-14 sm:h-14 mx-auto">
         <circle cx="29" cy="27" r="10" fill="rgba(255,255,255,0.55)" />
         <circle cx="51" cy="27" r="10" fill="rgba(255,255,255,0.55)" />
         <ellipse cx="29" cy="54" rx="13" ry="9" fill="rgba(255,255,255,0.2)" />
@@ -46,7 +46,7 @@ const CATEGORIES = [
     sub: "Şirketim için",
     bg: "#243d30",
     illustration: (
-      <svg viewBox="0 0 80 80" fill="none" className="w-14 h-14 mx-auto">
+      <svg viewBox="0 0 80 80" fill="none" className="w-8 h-8 sm:w-14 sm:h-14 mx-auto">
         <rect x="18" y="18" width="44" height="44" rx="6" fill="rgba(255,255,255,0.15)" />
         <rect x="25" y="28" width="11" height="11" rx="2" fill="rgba(255,255,255,0.55)" />
         <rect x="44" y="28" width="11" height="11" rx="2" fill="rgba(255,255,255,0.55)" />
@@ -65,7 +65,7 @@ export function HeroSection({ settings }: HeroSectionProps) {
     <section
       style={{ backgroundColor: "#325343", overflow: "hidden", paddingBottom: 0 }}
     >
-      <div className="mx-auto max-w-5xl px-6 pt-20 pb-0 text-center">
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 pt-12 sm:pt-20 pb-0 text-center">
         {/* Üst etiket */}
         <motion.p
           initial={{ opacity: 0, y: prefersReduced ? 0 : 10 }}
@@ -112,7 +112,7 @@ export function HeroSection({ settings }: HeroSectionProps) {
           transition={{ duration: 0.35, delay: 0.18 }}
           style={{
             fontFamily: "var(--font-inter)",
-            fontSize: 18,
+            fontSize: "clamp(14px, 4vw, 18px)",
             fontWeight: 400,
             color: "rgba(245,247,245,0.72)",
             marginBottom: 40,
@@ -181,7 +181,7 @@ export function HeroSection({ settings }: HeroSectionProps) {
         </motion.div>
 
         {/* 3 Kategori kartı */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 max-w-2xl mx-auto">
           {CATEGORIES.map((cat, i) => (
             <motion.div
               key={cat.label}
@@ -191,7 +191,7 @@ export function HeroSection({ settings }: HeroSectionProps) {
             >
               <Link
                 href={cat.href}
-                className="flex flex-col items-center gap-3 p-6 text-white group"
+                className="flex flex-col items-center gap-1 sm:gap-3 p-3 sm:p-6 text-white group"
                 style={{
                   backgroundColor: cat.bg,
                   borderRadius: 12,
@@ -212,10 +212,10 @@ export function HeroSection({ settings }: HeroSectionProps) {
               >
                 {cat.illustration}
                 <div>
-                  <p style={{ fontFamily: "var(--font-inter)", fontSize: 15, fontWeight: 700, marginBottom: 2, color: "#fff" }}>
+                  <p className="text-xs sm:text-base" style={{ fontFamily: "var(--font-inter)", fontWeight: 700, marginBottom: 2, color: "#fff" }}>
                     {cat.label}
                   </p>
-                  <p style={{ fontFamily: "var(--font-inter)", fontSize: 12, color: "rgba(255,255,255,0.75)" }}>
+                  <p className="hidden sm:block" style={{ fontFamily: "var(--font-inter)", fontSize: 12, color: "rgba(255,255,255,0.75)" }}>
                     {cat.sub} →
                   </p>
                 </div>
